@@ -4,6 +4,19 @@ Semua perubahan penting dicatat di sini. Format mengikuti [Keep a Changelog](htt
 
 ## [Unreleased]
 
+### Added
+- **SaaS manajemen surat**: pendaftaran publik `/daftar` + konfirmasi WhatsApp, persetujuan Superadmin dengan bukti transfer (tempel/unggah), tim dengan kode URL unik `/{kode}`, paket Bulanan Rp39.000 & Lifetime Rp99.000 (maks. 3 akun termasuk owner), masa tenggang & pembekuan otomatis.
+- Area tim: dashboard + checklist awal, surat masuk (agenda otomatis), disposisi berjenjang + lembar cetak, surat keluar dari template dengan pratinjau langsung, nomor & QR verifikasi terbit saat disetujui, PDF (dompdf), arsip & pencarian, laporan PDF/Excel, pegawai & divisi, klasifikasi/jenis/kontak, template tim, anggota & peran, pengaturan kop/penomoran, langganan, notifikasi.
+- Modul opsional yang dibuka/dikunci owner: lembur, perjalanan dinas, honorarium.
+- Panel Superadmin: Pendaftaran Masuk, Tim Pelanggan (pendapatan, jatuh tempo), Pengaturan Pembayaran (harga, rekening, WA, template pesan).
+- Dokumentasi alur bisnis: [docs/SAAS.md](SAAS.md).
+
+### Security
+- Isolasi data multi-tenant (global scope + `ResolveTeam` sebelum route binding), login dipisah per tim/platform, sanitasi HTML template, pengambilan logo anti-SSRF, ekspor Excel anti formula-injection.
+
+### Fixed
+- Tabel `notifications` memakai UUID (`users.id` UUID) — sebelumnya PostgreSQL menolak dan halaman tim error 500.
+
 ## [0.1.0] - 2026-11-08
 
 Setup awal project **Mail Sync** dari base starter.

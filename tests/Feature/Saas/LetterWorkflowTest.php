@@ -122,6 +122,23 @@ class LetterWorkflowTest extends SaasTestCase
         $this->assertSame('application/pdf', $pdf->headers->get('Content-Type'));
     }
 
+    public function test_outgoing_form_with_live_preview_renders_for_every_builtin_template(): void
+    {
+        $this->seed(DefaultLetterTemplateSeeder::class);
+        $team = $this->makeTeam();
+        $owner = $this->member($team);
+
+        $this->actingAs($owner)->get(route('team.outgoing.create', $team))->assertOk();
+        $this->actingAs($owner)->get(route('team.outgoing.create', [$team, 'template' => 'kosong']))->assertOk();
+
+        foreach (LetterTemplate::withoutGlobalScopes()->whereNull('team_id')->get() as $template) {
+            $this->actingAs($owner)->get(route('team.outgoing.create', [$team, 'template' => $template->id]))
+                ->assertOk()
+                ->assertSee('data-pv="', false)
+                ->assertSee('Pratinjau langsung');
+        }
+    }
+
     public function test_unknown_verification_token_shows_not_found_message(): void
     {
         $this->get('/verifikasi/'.str_repeat('a', 32))->assertOk()->assertSee('Surat tidak ditemukan');

@@ -38,7 +38,7 @@ return [
 
     'permissions_policy' => env(
         'SECURITY_PERMISSIONS_POLICY',
-        'payment=(), usb=(), serial=(), bluetooth=(), hid=(), midi=(), magnetometer=(), gyroscope=(), accelerometer=(), interest-cohort=()'
+        'payment=(), usb=(), serial=(), bluetooth=(), hid=(), midi=(), interest-cohort=()'
     ),
 
     /*

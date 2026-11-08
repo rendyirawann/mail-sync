@@ -196,7 +196,7 @@
                 return input.value;
             }
 
-            // Isi semua penanda {{kunci}} di pratinjau. textContent → aman dari XSS.
+            // Isi semua penanda [data-pv] di pratinjau. textContent → aman dari XSS.
             function paint(key, value, flash) {
                 document.querySelectorAll('.lp-sheet [data-pv="' + key + '"]').forEach(function (el) {
                     var text = (value || '').trim();
