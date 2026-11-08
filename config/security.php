@@ -27,6 +27,22 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Permissions-Policy
+    |--------------------------------------------------------------------------
+    |
+    | Hanya mematikan fitur browser yang jelas tidak dipakai aplikasi.
+    | Kamera/mikrofon/geolokasi/fullscreen TIDAK dimatikan supaya fitur yang
+    | nanti memakainya (mis. foto avatar via kamera) tidak rusak diam-diam.
+    |
+    */
+
+    'permissions_policy' => env(
+        'SECURITY_PERMISSIONS_POLICY',
+        'payment=(), usb=(), serial=(), bluetooth=(), hid=(), midi=(), magnetometer=(), gyroscope=(), accelerometer=(), interest-cohort=()'
+    ),
+
+    /*
+    |--------------------------------------------------------------------------
     | HTTP Strict Transport Security
     |--------------------------------------------------------------------------
     |

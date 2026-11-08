@@ -2,6 +2,13 @@
 
 return [
 
+    // Cloudflare Turnstile (anti-spam). Form tetap berfungsi bila dimatikan / key kosong.
+    'turnstile' => [
+        'enabled' => (bool) env('TURNSTILE_ENABLED', false) && env('TURNSTILE_SITE_KEY') && env('TURNSTILE_SECRET_KEY'),
+        'site_key' => env('TURNSTILE_SITE_KEY'),
+        'secret_key' => env('TURNSTILE_SECRET_KEY'),
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Third Party Services
