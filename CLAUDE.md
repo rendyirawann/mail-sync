@@ -1,6 +1,6 @@
 # Mail Sync — panduan untuk Claude
 
-**Mail Sync** — aplikasi web untuk menyinkronkan, mengelola, dan memantau email antar akun dalam satu panel admin yang aman.
+**Mail Sync** — Aplikasi manajemen surat online: surat masuk, disposisi, surat keluar ber-QR, dan arsip untuk tim & instansi.
 Modul saat ini: beranda publik + SEO, autentikasi (lokal & sosial), dashboard, akun saya, manajemen user & peran, log aktivitas, pengaturan aplikasi.
 
 ## Tech stack

@@ -24,16 +24,19 @@
                 <span class="text-lg font-extrabold tracking-tight text-slate-900">{{ config('app.name') }}</span>
             </a>
 
-            <nav aria-label="Navigasi utama">
+            <nav aria-label="Navigasi utama" class="flex items-center gap-2 sm:gap-4">
+                <a href="{{ route('home') }}#harga" class="hidden text-sm font-semibold text-slate-700 hover:text-brand-700 sm:inline">Harga</a>
                 @auth
-                    <a href="{{ route('dashboard') }}"
+                    @php $home = auth()->user()->team ? route('team.dashboard', auth()->user()->team) : route('dashboard'); @endphp
+                    <a href="{{ $home }}"
                         class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2">
                         Buka Dashboard
                     </a>
                 @else
-                    <a href="{{ route('login') }}"
+                    <a href="{{ route('team.find') }}" class="rounded-lg px-3 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100">Masuk</a>
+                    <a href="{{ route('register.team') }}"
                         class="rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-600 focus-visible:ring-offset-2">
-                        Masuk
+                        Daftar
                     </a>
                 @endauth
             </nav>

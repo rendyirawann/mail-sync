@@ -16,6 +16,32 @@
 
     @role('Superadmin|superadmin')
         <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
+            class="menu-item menu-lg-down-accordion me-lg-2 {{ request()->routeIs('admin.saas.*') ? 'here show menu-here-bg' : '' }}">
+            <span class="menu-link py-3">
+                <span class="menu-icon"><i class="ki-outline ki-briefcase fs-3"></i></span>
+                <span class="menu-title">Layanan SaaS</span>
+                @if (($pendingRegistrations ?? 0) > 0)
+                    <span class="badge badge-circle badge-warning ms-2 w-20px h-20px fs-9">{{ $pendingRegistrations }}</span>
+                @endif
+                <span class="menu-arrow d-lg-none"></span>
+            </span>
+            <div class="menu-sub menu-sub-lg-down-accordion menu-sub-lg-dropdown py-4 w-250px">
+                @foreach ([
+                    ['admin.saas.registrations.index', 'admin.saas.registrations.*', 'ki-user-tick', 'Pendaftaran Masuk'],
+                    ['admin.saas.teams.index', 'admin.saas.teams.*', 'ki-people', 'Tim Pelanggan'],
+                    ['admin.saas.billing.index', 'admin.saas.billing.*', 'ki-wallet', 'Pengaturan Pembayaran'],
+                ] as [$r, $active, $icon, $label])
+                    <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs($active) ? 'active' : '' }}" href="{{ route($r) }}">
+                            <span class="menu-icon"><i class="ki-outline {{ $icon }} fs-4"></i></span>
+                            <span class="menu-title">{{ $label }}</span>
+                        </a>
+                    </div>
+                @endforeach
+            </div>
+        </div>
+
+        <div data-kt-menu-trigger="{default: 'click', lg: 'hover'}" data-kt-menu-placement="bottom-start"
             class="menu-item menu-lg-down-accordion me-lg-2 {{ request()->is('admin/users*') || request()->is('admin/roles*') ? 'here show menu-here-bg' : '' }}">
             <span class="menu-link py-3">
                 <span class="menu-icon">

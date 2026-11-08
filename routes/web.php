@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Route;
 
 // --- Halaman publik (bisa diindeks) ---
 Route::get('/', HomeController::class)->name('home');
+Route::get('/masuk', [HomeController::class, 'teamLogin'])->middleware('throttle:login')->name('team.find');
 
 // robots.txt & sitemap.xml dinamis — dikecualikan dari rate limit web.
 Route::withoutMiddleware('throttle:web')->group(function () {

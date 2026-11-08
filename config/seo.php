@@ -16,11 +16,11 @@ return [
 
     'site_name' => env('APP_NAME', 'Mail Sync'),
 
-    'tagline' => env('SEO_TAGLINE', 'Sinkronisasi email dalam satu panel'),
+    'tagline' => env('SEO_TAGLINE', 'Manajemen surat dalam satu panel'),
 
-    'description' => env('APP_DESCRIPTION', 'Aplikasi web untuk menyinkronkan, mengelola, dan memantau email antar akun dalam satu panel admin.'),
+    'description' => env('APP_DESCRIPTION', 'Aplikasi manajemen surat online: surat masuk, disposisi, surat keluar ber-QR, dan arsip untuk tim & instansi.'),
 
-    'keywords' => env('SEO_KEYWORDS', 'mail sync, sinkronisasi email, email, imap, manajemen email, panel admin'),
+    'keywords' => env('SEO_KEYWORDS', 'manajemen surat, aplikasi surat menyurat, surat masuk, surat keluar, disposisi surat, arsip surat, e-office, mail sync'),
 
     // Path relatif public/ atau URL absolut.
     'og_image' => env('SEO_OG_IMAGE') ?: 'og-image.png',

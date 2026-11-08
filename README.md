@@ -1,6 +1,6 @@
 # Mail Sync
 
-Mail Sync — aplikasi web untuk menyinkronkan, mengelola, dan memantau email antar akun dalam satu panel admin yang aman.
+Mail Sync — aplikasi manajemen surat online untuk tim & instansi: surat masuk, disposisi, surat keluar ber-QR, dan arsip dalam satu tempat.
 
 ## Fitur utama
 

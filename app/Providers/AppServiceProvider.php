@@ -213,7 +213,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('team.layout.app', \App\View\Composers\TeamLayoutComposer::class);
 
         // Badge "Pendaftaran Masuk" di sidebar Superadmin (query di sini, bukan di Blade).
-        View::composer('backend.layout.sidebar', function ($view): void {
+        View::composer(['backend.layout.sidebar', 'backend.layout.menu'], function ($view): void {
             $user = auth()->user();
             $view->with('pendingRegistrations', $user?->isSuperadmin()
                 ? \App\Models\Registration::where('status', 'pending')->count()

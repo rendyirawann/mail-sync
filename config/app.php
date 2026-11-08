@@ -69,7 +69,7 @@ return [
     | Deskripsi singkat aplikasi — dipakai sebagai meta description default
     | (lihat config/seo.php) dan di halaman beranda.
     */
-    'description' => env('APP_DESCRIPTION', 'Aplikasi web untuk menyinkronkan, mengelola, dan memantau email antar akun dalam satu panel admin.'),
+    'description' => env('APP_DESCRIPTION', 'Aplikasi manajemen surat online: surat masuk, disposisi, surat keluar ber-QR, dan arsip untuk tim & instansi.'),
 
     'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta'),
 
