@@ -1,9 +1,13 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "rendyirawann/mail-sync",
     "type": "project",
-    "description": "The skeleton application for the Laravel framework.",
-    "keywords": ["laravel", "framework"],
+    "description": "Mail Sync - aplikasi web untuk menyinkronkan, mengelola, dan memantau email antar akun.",
+    "keywords": [
+        "laravel",
+        "mail-sync",
+        "email"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.2",

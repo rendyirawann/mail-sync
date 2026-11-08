@@ -104,7 +104,7 @@ class BrandingService
 
         $single = $words[0] ?? 'A';
 
-        // "StarterTemp" -> "ST" by picking up the internal capital letters.
+        // "MailSync" -> "MS" by picking up the internal capital letters.
         if (preg_match_all('/\p{Lu}/u', $single, $m) && count($m[0]) >= 2) {
             return Str::upper($m[0][0] . $m[0][1]);
         }

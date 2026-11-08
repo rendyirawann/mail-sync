@@ -11,7 +11,7 @@ return new class extends Migration
      */
     private function defaults(): array
     {
-        $appName = config('app.name', 'StarterTemp');
+        $appName = config('app.name', 'Mail Sync');
 
         return [
             'site_short_name' => \Illuminate\Support\Str::limit($appName, 12, ''),

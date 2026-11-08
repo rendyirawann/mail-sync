@@ -5,11 +5,10 @@
             {{-- Year is rendered server-side from the app timezone, so it rolls
                  over on its own without any client clock involved. --}}
             <div class="text-muted fs-7">
-                &copy; {{ now()->year }}
-                <a href="{{ $brand['github'] }}" target="_blank" rel="noopener noreferrer"
-                    class="text-gray-800 text-hover-primary fw-semibold">{{ $brand['owner'] }}</a>
-                &middot; {{ $brand['name'] }}
-                <span class="d-none d-sm-inline">&middot; All rights reserved.</span>
+                &copy; {{ now()->year }} {{ config('app.name') }}. All rights reserved.
+                <span class="d-none d-sm-inline">&middot; Dibuat oleh
+                    <a href="{{ $brand['github'] }}" target="_blank" rel="noopener noreferrer"
+                        class="text-gray-800 text-hover-primary fw-semibold">{{ $brand['owner'] }}</a></span>
             </div>
 
             <nav class="app-footer__social" aria-label="Tautan pengembang">

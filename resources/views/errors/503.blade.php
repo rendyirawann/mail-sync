@@ -49,7 +49,7 @@
                 </a>
 
                 <p class="auth-foot mb-0">
-                    &copy; {{ now()->year }} {{ $brand['owner'] }} &middot; {{ $brand['name'] }}
+                    &copy; {{ now()->year }} {{ config('app.name') }}. All rights reserved.
                 </p>
             </div>
         </main>

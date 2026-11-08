@@ -76,7 +76,7 @@
                                 <div class="mb-6">
                                     <label class="form-label fw-semibold" for="site_name">Nama Aplikasi <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control form-control-solid" id="site_name"
-                                        name="site_name" value="{{ $value('site_name', 'StarterTemp') }}" required
+                                        name="site_name" value="{{ $value('site_name', config('app.name')) }}" required
                                         maxlength="60" />
                                     <div class="form-text">Dipakai di judul halaman, navbar, footer, dan meta tag.</div>
                                 </div>

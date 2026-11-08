@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'Mail Sync'),
 
     /*
     |--------------------------------------------------------------------------
@@ -65,6 +65,12 @@ return [
     |
     */
 
+    /*
+    | Deskripsi singkat aplikasi — dipakai sebagai meta description default
+    | (lihat config/seo.php) dan di halaman beranda.
+    */
+    'description' => env('APP_DESCRIPTION', 'Aplikasi web untuk menyinkronkan, mengelola, dan memantau email antar akun dalam satu panel admin.'),
+
     'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta'),
 
     /*
@@ -78,11 +84,11 @@ return [
     |
     */
 
-    'locale' => env('APP_LOCALE', 'en'),
+    'locale' => env('APP_LOCALE', 'id'),
 
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
-    'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
+    'faker_locale' => env('APP_FAKER_LOCALE', 'id_ID'),
 
     /*
     |--------------------------------------------------------------------------
