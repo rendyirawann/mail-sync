@@ -14,6 +14,15 @@
         "testing-best-practices",
         "socialite-development",
         "echo-development",
-        "tailwindcss-development"
+        "tailwindcss-development",
+        "code-standards",
+        "deployment",
+        "laravel-feature",
+        "project-setup",
+        "security-review",
+        "seo-page",
+        "testing",
+        "ui-and-branding",
+        "validation-and-errors"
     ]
 }

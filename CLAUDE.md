@@ -1,4 +1,108 @@
+# Mail Sync — panduan untuk Claude
+
+**Mail Sync** — aplikasi web untuk menyinkronkan, mengelola, dan memantau email antar akun dalam satu panel admin yang aman.
+Modul saat ini: beranda publik + SEO, autentikasi (lokal & sosial), dashboard, akun saya, manajemen user & peran, log aktivitas, pengaturan aplikasi.
+
+## Tech stack
+- PHP 8.4 (min 8.2), **Laravel 12** (konfigurasi di `bootstrap/app.php`, tanpa Kernel.php), PostgreSQL
+- Panel: Blade + tema Metronic (Bootstrap 5, jQuery, DataTables) di `public/assets` · Publik: Blade + Tailwind 4 via Vite 7
+- Reverb + Echo (realtime), Spatie Permission & Activitylog, Socialite, Yajra DataTables, cybercog/laravel-ban
+- Pint, Larastan level 5, ESLint, Prettier, PHPUnit 11, Laravel Boost (MCP `laravel-boost`)
+
+## Perintah penting
+```bash
+composer install && npm install            # install
+php artisan serve --port=8881              # app (APP_URL=http://127.0.0.1:8881)
+npm run dev                                # Vite
+php artisan reverb:start                   # websocket
+php artisan queue:work                     # queue
+php artisan test                           # test (SQLite in-memory)
+vendor/bin/pint --dirty                    # format
+vendor/bin/phpstan analyse                 # analisis statis
+npm run build && npm run lint              # aset & lint JS
+php artisan app:branding --apply           # buat ulang logo/favicon/OG
+php artisan boost:update                   # sinkron .ai/ → .claude/skills & CLAUDE.md
+```
+Windows: `php artisan tinker` meminta konfirmasi interaktif — gunakan skrip PHP yang mem-bootstrap app.
+
+## Lokasi penting
+| Apa | Di mana |
+| --- | --- |
+| Middleware keamanan | `app/Http/Middleware/{SecurityHeaders,BlockSuspiciousRequests,ProtectAgainstSpam,SanitizeInput}.php` |
+| Konfigurasi keamanan / SEO / brand | `config/security.php`, `config/seo.php`, `config/branding.php` |
+| Rate limiter, password policy, log keamanan | `app/Providers/AppServiceProvider.php` |
+| Exception JSON & alias middleware | `bootstrap/app.php` |
+| Identitas per request (`$brand`) | `app/Support/Brand.php` (settings DB > config) |
+| Layout | `resources/views/frontend/layout.blade.php`, `auth/app.blade.php`, `backend/layout/app.blade.php` |
+| Head SEO | `resources/views/partials/seo.blade.php` |
+| AJAX CSRF/422/419 | `resources/views/partials/ajax-setup.blade.php` |
+| Komponen | `resources/views/components/` (`honeypot`, `field-error`, `avatar`) |
+| Halaman error (mandiri) | `resources/views/errors/` |
+| Terjemahan | `lang/id/` |
+| Helper IDOR | `App\Http\Controllers\Controller::ownAccountOrFail()` |
+
+## Aturan wajib
+- **Jangan pernah menampilkan isi `.env`**, APP_KEY, atau secret apa pun di output/log.
+- Semua teks UI memakai `config('app.name')`/`$brand[...]`; pesan, validasi, error dalam **Bahasa Indonesia**.
+- Controller tipis → FormRequest → Service/Action → Model; Policy/Gate untuk otorisasi; `$fillable` eksplisit; type hint & return type; PHPDoc Bahasa Indonesia; Conventional Commits.
+- Data milik user selalu di-scope ke pemilik (cegah IDOR). Error ke klien pakai `$this->debugMessage($e)`.
+- Form publik: `@csrf` + `<x-honeypot />` + middleware `spam` + throttle. Upload: mimes + max + nama acak, tanpa svg/html/php.
+- **Jangan ubah CSP tanpa membuka halaman dan mengecek console**; jangan pakai nonce/strict-dynamic; tambah domain lewat `SECURITY_CSP_EXTRA_HOSTS` atau konstanta di `SecurityHeaders`.
+- Jangan edit `public/assets/plugins` (vendor tema). Jangan edit blok guidelines yang dikelola Boost (di bawah) secara manual — ubah `.ai/guidelines/` lalu `php artisan boost:update`.
+- Sebelum selesai: `pint --dirty`, `phpstan analyse`, `php artisan test`, dan skill `security-review` untuk fitur baru.
+
+## Alur kerja
+- Jika plugin **superpowers** terpasang: brainstorming → writing-plans → executing-plans untuk pekerjaan besar, test-driven-development, systematic-debugging saat error, verification-before-completion sebelum menyatakan selesai.
+- Pakai MCP `laravel-boost` (`search-docs`, `database-schema`, `tinker`, `browser-logs`) untuk API sesuai versi.
+
+## Skill project (`.ai/skills/`, tersinkron ke `.claude/skills/`)
+| Skill | Kapan |
+| --- | --- |
+| `laravel-feature` | Membuat modul/CRUD baru end-to-end |
+| `code-standards` | Menulis/review kode (penamaan, arsitektur, PHPDoc) |
+| `security-review` | Sebelum commit/merge fitur, audit OWASP |
+| `validation-and-errors` | Validasi, pesan error, JSON 422, halaman error |
+| `ui-and-branding` | Layout, komponen, logo, warna, CDN & CSP |
+| `seo-page` | Halaman publik, meta, sitemap, noindex |
+| `testing` | Menulis/menjalankan test |
+| `deployment` | Rilis ke production |
+| `project-setup` | Setup ulang saat folder disalin jadi project baru |
+
+Plugin eksternal yang disarankan: superpowers, example-skills (anthropics/skills — frontend-design, webapp-testing, skill-creator), semgrep, supply-chain-risk-auditor, ask-questions-if-underspecified.
+
+## Dokumentasi
+[README](README.md) · [Arsitektur](docs/ARCHITECTURE.md) · [Database](docs/DATABASE.md) · [Keamanan](docs/SECURITY.md) · [Deployment](docs/DEPLOYMENT.md) · [API](docs/API.md) · [Changelog](docs/CHANGELOG.md)
+
 <laravel-boost-guidelines>
+=== .ai/mail-sync rules ===
+
+# Mail Sync — Project Guidelines
+
+## Code standards
+
+- Laravel 12 conventions: middleware & exceptions in `bootstrap/app.php` (no Kernel.php). Use `config()` in code; `env()` only inside `config/`.
+- Thin controllers → FormRequest (rules + `authorize()` + Indonesian `messages()`/`attributes()`) → Service/Action in `app/Services` or `app/Actions` → Eloquent. Wrap multi-table writes in `DB::transaction()`.
+- Authorization via Policy/Gate or `can:` middleware. For "my account" routes use `$this->ownAccountOrFail($id)` from `App\Http\Controllers\Controller`.
+- Models: explicit `$fillable`, sensitive attributes in `$hidden`, `casts()` method. Statuses/types as PHP Enums in `app/Enums`. Eager load relations (lazy loading is logged in non-production).
+- Typed parameters and return types everywhere, constructor property promotion, `match`, early returns.
+- PHPDoc in Bahasa Indonesia on every class and public method; comments explain WHY.
+- Naming: singular PascalCase models, plural snake_case tables, `StoreXRequest`/`UpdateXRequest`, kebab-case URLs, dotted route names.
+- Run `vendor/bin/pint --dirty` and `vendor/bin/phpstan analyse` (level 5) before finishing. Conventional Commits.
+
+## Security
+
+- Never print `.env` values, APP_KEY, or secrets. Never log passwords/tokens.
+- CSP lives in `app/Http/Middleware/SecurityHeaders.php` + `config/security.php`. Add hosts via `SECURITY_CSP_EXTRA_HOSTS` or the constants there; never add nonces/strict-dynamic. Check the browser console for CSP violations after changes.
+- Public forms: `@csrf` + `<x-honeypot />` + `spam` middleware + a throttle limiter.
+- Uploads: `mimes` + `max`, random filename, never accept svg/html/php.
+- Security events go to `Log::channel('security')`.
+
+## UI
+
+- All UI text uses `config('app.name')` / `$brand[...]` — never hardcode the app name.
+- User-facing messages, validation, and errors in Bahasa Indonesia.
+- Public pages extend `frontend.layout` (Tailwind via Vite); panel pages extend `backend.layout.app` (Metronic in `public/assets`).
+
 === foundation rules ===
 
 # Laravel Boost Guidelines

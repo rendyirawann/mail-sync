@@ -25,3 +25,6 @@ Thumbs.db
 
 # PHPStan cache
 /storage/framework/cache/phpstan
+
+# Claude Code — commit CLAUDE.md, .ai/, .claude/skills, .claude/settings.json, .mcp.json
+/.claude/settings.local.json
