@@ -19,7 +19,7 @@
 
     {{-- Navbar lengket, lebar penuh --}}
     <header class="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/95 backdrop-blur-md">
-        <div class="mx-auto flex h-16 max-w-[1440px] items-center justify-between px-4 sm:px-10">
+        <div class="mx-auto flex h-16 max-w-full items-center justify-between px-4 sm:px-10">
             <div class="flex items-center gap-3">
                 <a href="{{ route('home') }}" class="group flex items-center gap-2.5" aria-label="Beranda {{ config('app.name') }}">
                     <img src="{{ $brand['logo_url'] }}" alt="{{ config('app.name') }}" width="32" height="32" class="h-8 w-8 rounded-lg" />
@@ -55,7 +55,7 @@
     </main>
 
     <footer class="w-full border-t border-slate-200 bg-white py-8">
-        <div class="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-4 text-xs text-slate-500 sm:flex-row sm:px-10">
+        <div class="mx-auto flex max-w-full flex-col items-center justify-between gap-4 px-4 text-xs text-slate-500 sm:flex-row sm:px-10">
             <p>&copy; {{ now()->year }} {{ config('app.name') }}. All rights reserved.
                 &middot; Part of <a href="https://mdt-solution.site" target="_blank" rel="noopener"
                     class="font-semibold text-slate-700 hover:underline">MDT Solution</a></p>

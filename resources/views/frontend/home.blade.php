@@ -12,7 +12,7 @@
 @section('content')
     {{-- ================= HERO ================= --}}
     <section class="w-full border-b border-slate-200 bg-white">
-        <div class="mx-auto max-w-[1440px] px-4 py-12 sm:px-10 lg:py-20">
+        <div class="mx-auto max-w-full px-4 py-12 sm:px-10 lg:py-20">
             <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-10">
 
                 <div class="space-y-7 lg:col-span-5">
@@ -178,7 +178,7 @@
 
     {{-- ================= FITUR ================= --}}
     <section id="fitur" class="w-full scroll-mt-16 border-b border-slate-200 bg-slate-50/60 py-20" aria-labelledby="judul-fitur">
-        <div class="mx-auto max-w-[1440px] px-4 sm:px-10">
+        <div class="mx-auto max-w-full px-4 sm:px-10">
             <div class="mb-14 max-w-2xl">
                 <div class="mb-2 text-xs font-bold uppercase tracking-wider text-brand-600">Alur Tata Usaha Modern</div>
                 <h2 id="judul-fitur" class="text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-4xl">Dibuat untuk mengelola surat dengan rapi</h2>
@@ -218,7 +218,7 @@
 
     {{-- ================= CARA KERJA ================= --}}
     <section id="cara-kerja" class="w-full scroll-mt-16 border-b border-slate-200 bg-white py-20" aria-labelledby="judul-alur">
-        <div class="mx-auto max-w-[1440px] px-4 sm:px-10">
+        <div class="mx-auto max-w-full px-4 sm:px-10">
             <div class="mb-12 max-w-2xl">
                 <div class="mb-2 text-xs font-bold uppercase tracking-wider text-brand-600">Implementasi Instan</div>
                 <h2 id="judul-alur" class="text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-4xl">Mulai dalam 3 langkah</h2>
@@ -244,7 +244,7 @@
 
     {{-- ================= HARGA ================= --}}
     <section id="harga" class="w-full scroll-mt-16 border-b border-slate-200 bg-slate-50/60 py-20" aria-labelledby="judul-harga">
-        <div class="mx-auto max-w-[1440px] px-4 sm:px-10">
+        <div class="mx-auto max-w-full px-4 sm:px-10">
             <div class="mx-auto mb-14 max-w-2xl text-center">
                 <h2 id="judul-harga" class="text-2xl font-extrabold tracking-tight text-zinc-950 sm:text-4xl">Harga sederhana, tanpa biaya tersembunyi</h2>
                 <p class="mt-2.5 text-base text-slate-600">Semua paket mendapat seluruh fitur. Bedanya hanya cara bayar.</p>
@@ -284,7 +284,7 @@
 
     {{-- ================= CTA PENUTUP ================= --}}
     <section class="w-full border-b border-slate-200 bg-brand-50/50 py-14">
-        <div class="mx-auto flex max-w-[1440px] flex-col items-start justify-between gap-6 px-4 sm:px-10 md:flex-row md:items-center">
+        <div class="mx-auto flex max-w-full flex-col items-start justify-between gap-6 px-4 sm:px-10 md:flex-row md:items-center">
             <div>
                 <h2 class="text-xl font-extrabold tracking-tight text-zinc-950 sm:text-2xl">Siap merapikan surat-menyurat tim Anda?</h2>
                 <p class="mt-1 text-sm text-slate-600">Daftar sekarang, atau masuk dengan kode tim Anda.</p>
