@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -28,11 +29,15 @@ class AppServiceProvider extends ServiceProvider
     {
         // Resolved once per request (and reset between Octane requests).
         $this->app->scoped(Brand::KEY, fn () => Brand::compute());
+
+        // Tim aktif per request (diisi middleware ResolveTeam).
+        $this->app->scoped(\App\Support\Tenancy\CurrentTeam::class);
     }
 
     public function boot(): void
     {
         $this->configureProxies();
+        $this->configureTeamBindings();
         $this->configureUrls();
         $this->configureAuthorization();
         $this->configurePasswordPolicy();
@@ -40,6 +45,44 @@ class AppServiceProvider extends ServiceProvider
         $this->logSecurityEvents();
         $this->configureRateLimiting();
         $this->shareBranding();
+    }
+
+    /**
+     * Binding parameter route area tim. Semua model memakai BelongsToTeam,
+     * jadi pencarian otomatis ter-scope ke tim aktif (ResolveTeam berjalan
+     * sebelum SubstituteBindings). Anggota & template butuh aturan khusus.
+     */
+    private function configureTeamBindings(): void
+    {
+        Route::model('incoming', \App\Models\IncomingLetter::class);
+        Route::model('outgoing', \App\Models\OutgoingLetter::class);
+        Route::model('disposition', \App\Models\Disposition::class);
+        Route::model('employee', \App\Models\Employee::class);
+        Route::model('division', \App\Models\Division::class);
+        Route::model('overtime', \App\Models\Overtime::class);
+        Route::model('trip', \App\Models\BusinessTrip::class);
+        Route::model('honorarium', \App\Models\Honorarium::class);
+
+        // Anggota: hanya user di tim aktif.
+        Route::bind('member', function (string $value) {
+            $teamId = app(\App\Support\Tenancy\CurrentTeam::class)->id();
+            abort_if($teamId === null, 404);
+
+            return \App\Models\User::where('team_id', $teamId)->findOrFail($value);
+        });
+
+        // Template: milik tim aktif atau bawaan (team_id null).
+        Route::bind('template', function (string $value) {
+            $teamId = app(\App\Support\Tenancy\CurrentTeam::class)->id();
+            abort_if($teamId === null, 404);
+
+            return \App\Models\LetterTemplate::withoutGlobalScope('team')
+                ->where(fn ($q) => $q->whereNull('team_id')->orWhere('team_id', $teamId))
+                ->findOrFail($value);
+        });
+
+        // Notifikasi: hanya milik user yang login.
+        Route::bind('notification', fn (string $value) => request()->user()?->notifications()->findOrFail($value) ?? abort(404));
     }
 
     /**
@@ -67,9 +110,15 @@ class AppServiceProvider extends ServiceProvider
     private function configureAuthorization(): void
     {
         // Superadmin implicitly holds every permission.
+        // Hanya akun platform (team_id null) — anggota tim tidak pernah lolos lewat jalur ini.
         Gate::before(function ($user, $ability) {
-            return $user->hasRole(['Superadmin', 'superadmin']) ? true : null;
+            return $user->team_id === null && $user->hasRole(['Superadmin', 'superadmin']) ? true : null;
         });
+
+        // Hak akses tim: Gate "team.letters.manage", dst. dari matriks TeamRole::ABILITIES.
+        foreach (array_keys(\App\Enums\TeamRole::ABILITIES) as $ability) {
+            Gate::define('team.'.$ability, fn ($user) => (bool) $user->team_role?->can($ability));
+        }
     }
 
     /**
@@ -160,6 +209,16 @@ class AppServiceProvider extends ServiceProvider
         });
 
         View::composer('backend.layout.navbar', NotificationComposer::class);
+
+        View::composer('team.layout.app', \App\View\Composers\TeamLayoutComposer::class);
+
+        // Badge "Pendaftaran Masuk" di sidebar Superadmin (query di sini, bukan di Blade).
+        View::composer('backend.layout.sidebar', function ($view): void {
+            $user = auth()->user();
+            $view->with('pendingRegistrations', $user?->isSuperadmin()
+                ? \App\Models\Registration::where('status', 'pending')->count()
+                : 0);
+        });
     }
 
     /** @return array<string,string> */

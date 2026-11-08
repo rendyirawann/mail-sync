@@ -19,8 +19,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $due_date
  * @property DispositionStatus $status
  * @property string|null $response
- * @property-read IncomingLetter $letter
- * @property-read Employee $recipient
+ * @property-read IncomingLetter|null $letter
+ * @property-read Employee|null $recipient
  */
 class Disposition extends Model
 {

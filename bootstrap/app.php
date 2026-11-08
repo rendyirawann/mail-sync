@@ -29,7 +29,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'team.member' => \App\Http\Middleware\EnsureTeamMember::class,
             'team.writable' => \App\Http\Middleware\EnsureTeamWritable::class,
             'team.role' => \App\Http\Middleware\EnsureTeamRole::class,
+            'team.module' => \App\Http\Middleware\EnsureModuleEnabled::class,
         ]);
+
+        // Tim aktif harus sudah ditetapkan SEBELUM route model binding, agar
+        // {incoming}/{outgoing}/dst. ter-scope ke tim ini (cegah IDOR lintas tim).
+        $middleware->prependToPriorityList(
+            before: \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            prepend: \App\Http\Middleware\ResolveTeam::class,
+        );
 
         // Tamu di URL tim → login tim; selain itu → login Superadmin.
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request): string {

@@ -38,6 +38,33 @@
             @role('Superadmin|superadmin')
                 <div class="menu-item pt-5">
                     <div class="menu-content">
+                        <span class="menu-heading fw-bold text-uppercase fs-7">Layanan SaaS</span>
+                    </div>
+                </div>
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('admin.saas.registrations.*') ? 'active' : '' }}" href="{{ route('admin.saas.registrations.index') }}">
+                        <span class="menu-icon"><i class="ki-duotone ki-user-tick fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span></i></span>
+                        <span class="menu-title">Pendaftaran Masuk</span>
+                        @if (($pendingRegistrations ?? 0) > 0)
+                            <span class="menu-badge"><span class="badge badge-warning">{{ $pendingRegistrations }}</span></span>
+                        @endif
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('admin.saas.teams.*') ? 'active' : '' }}" href="{{ route('admin.saas.teams.index') }}">
+                        <span class="menu-icon"><i class="ki-duotone ki-people fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span><span class="path5"></span></i></span>
+                        <span class="menu-title">Tim Pelanggan</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a class="menu-link {{ request()->routeIs('admin.saas.billing.*') ? 'active' : '' }}" href="{{ route('admin.saas.billing.index') }}">
+                        <span class="menu-icon"><i class="ki-duotone ki-wallet fs-3"><span class="path1"></span><span class="path2"></span><span class="path3"></span><span class="path4"></span></i></span>
+                        <span class="menu-title">Pengaturan Pembayaran</span>
+                    </a>
+                </div>
+
+                <div class="menu-item pt-5">
+                    <div class="menu-content">
                         <span class="menu-heading fw-bold text-uppercase fs-7">Manajemen</span>
                     </div>
                 </div>

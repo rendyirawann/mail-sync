@@ -585,7 +585,14 @@
 
             var submit = function () {
                 trigger.dataset.confirmBusy = '1';
-                form.submit();
+
+                // requestSubmit(trigger) ikut mengirim name/value tombol yang ditekan
+                // (mis. next=approve) dan memicu event submit; form.submit() tidak.
+                if (typeof form.requestSubmit === 'function' && trigger.type === 'submit') {
+                    form.requestSubmit(trigger);
+                } else {
+                    form.submit();
+                }
             };
 
             var title = trigger.getAttribute('data-confirm-title') || 'Konfirmasi';

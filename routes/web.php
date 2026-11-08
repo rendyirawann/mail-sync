@@ -10,9 +10,12 @@ use App\Http\Controllers\Backend\MyProfile\ActivityController;
 use App\Http\Controllers\Backend\MyProfile\LoginSessionController;
 use App\Http\Controllers\Backend\MyProfile\ProfileController;
 use App\Http\Controllers\Backend\MyProfile\SecurityController;
+use App\Http\Controllers\Backend\Saas\BillingSettingController;
+use App\Http\Controllers\Backend\Saas\RegistrationAdminController;
+// User management
+use App\Http\Controllers\Backend\Saas\TeamAdminController;
 use App\Http\Controllers\Backend\Settings\SettingController;
 use App\Http\Controllers\Backend\UserManagement\RoleController;
-// User management
 use App\Http\Controllers\Backend\UserManagement\UserController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\LetterVerificationController;
@@ -107,6 +110,38 @@ Route::middleware(['auth', 'forbid-banned-user', 'platform'])->group(function ()
     Route::get('/admin/settings', [SettingController::class, 'index'])
         ->middleware('can:view_resources')
         ->name('settings.index');
+
+    /*
+    |----------------------------------------------------------------------
+    | Layanan SaaS — Superadmin only.
+    |----------------------------------------------------------------------
+    */
+    Route::middleware('role:Superadmin|superadmin')->prefix('admin/saas')->name('admin.saas.')->group(function () {
+        Route::get('/pendaftaran', [RegistrationAdminController::class, 'index'])->name('registrations.index');
+        Route::get('/pendaftaran/baru', [RegistrationAdminController::class, 'create'])->name('registrations.create');
+        Route::get('/pendaftaran/{registration}', [RegistrationAdminController::class, 'show'])->name('registrations.show');
+
+        Route::get('/tim', [TeamAdminController::class, 'index'])->name('teams.index');
+        Route::get('/tim/{team:id}', [TeamAdminController::class, 'show'])->name('teams.show');
+        Route::get('/bukti/{payment}', [TeamAdminController::class, 'proof'])->name('payments.proof');
+
+        Route::get('/pembayaran', [BillingSettingController::class, 'index'])->name('billing.index');
+
+        Route::middleware('throttle:write')->group(function () {
+            Route::post('/pendaftaran', [RegistrationAdminController::class, 'store'])->name('registrations.store');
+            Route::post('/pendaftaran/{registration}/setujui', [RegistrationAdminController::class, 'approve'])->name('registrations.approve');
+            Route::post('/pendaftaran/{registration}/tolak', [RegistrationAdminController::class, 'reject'])->name('registrations.reject');
+
+            Route::post('/tim/{team:id}/perpanjang', [TeamAdminController::class, 'renew'])->name('teams.renew');
+            Route::patch('/tim/{team:id}/status', [TeamAdminController::class, 'updateStatus'])->name('teams.status');
+
+            Route::put('/pembayaran/paket', [BillingSettingController::class, 'updatePlans'])->name('billing.plans');
+            Route::put('/pembayaran/whatsapp', [BillingSettingController::class, 'updateWhatsapp'])->name('billing.whatsapp');
+            Route::post('/pembayaran/rekening', [BillingSettingController::class, 'storeBank'])->name('billing.banks.store');
+            Route::put('/pembayaran/rekening/{bank}', [BillingSettingController::class, 'updateBank'])->name('billing.banks.update');
+            Route::delete('/pembayaran/rekening/{bank}', [BillingSettingController::class, 'destroyBank'])->name('billing.banks.destroy');
+        });
+    });
 
     /*
     |----------------------------------------------------------------------

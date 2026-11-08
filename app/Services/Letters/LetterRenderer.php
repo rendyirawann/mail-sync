@@ -55,7 +55,7 @@ class LetterRenderer
                 'tanggal_surat' => self::dateId($date),
                 'tujuan' => (string) $letter->recipient,
                 'perihal' => (string) $letter->subject,
-                'sifat' => $letter->nature?->label() ?? 'Biasa',
+                'sifat' => $letter->nature->label(),
                 'penandatangan_nama' => (string) $signer?->name,
                 'penandatangan_jabatan' => (string) $signer?->position,
                 'penandatangan_nip' => (string) $signer?->nip,
@@ -103,7 +103,7 @@ class LetterRenderer
             'team' => $team,
             'letter' => $letter,
             'body' => $body,
-            'paper' => $template?->paper ?? 'A4',
+            'paper' => $template->paper ?? 'A4',
             'letterhead' => $this->letterhead($team, $forPdf),
             // Template tanpa {{qr}} tetap mendapat QR di bagian bawah surat.
             'qr' => ($template !== null && str_contains($template->body, '{{qr}}')) ? null : $qr,
@@ -119,7 +119,7 @@ class LetterRenderer
      */
     public function withDefaults(?LetterTemplate $template, array $content): array
     {
-        foreach ($template?->fields ?? [] as $field) {
+        foreach ($template->fields ?? [] as $field) {
             $key = $field['key'];
 
             if (trim((string) ($content[$key] ?? '')) === '' && isset($field['default'])) {

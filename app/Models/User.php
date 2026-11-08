@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Storage; // 1. Ini penawar errornya
 use Illuminate\Support\Str;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @property string $id
+ * @property string|null $team_id
+ * @property TeamRole|null $team_role
+ * @property-read Team|null $team
+ */
 class User extends Authenticatable implements BannableContract
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -163,6 +169,10 @@ class User extends Authenticatable implements BannableContract
     /** Primary role name for display purposes. */
     public function getRoleLabelAttribute(): string
     {
+        if ($this->team_role !== null) {
+            return $this->team_role->label();
+        }
+
         return $this->roles->first()->name ?? 'User';
     }
 }

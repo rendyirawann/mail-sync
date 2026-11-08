@@ -13,7 +13,11 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Menetapkan tim aktif dari segmen URL /{team} dan membagikannya ke view.
- * Semua model ber-trait BelongsToTeam otomatis terfilter ke tim ini.
+ *
+ * PENTING: middleware ini diprioritaskan SEBELUM SubstituteBindings
+ * (bootstrap/app.php). Dengan begitu, saat Laravel me-resolve {incoming},
+ * {outgoing}, dst., global scope BelongsToTeam sudah aktif sehingga model
+ * milik tim lain tidak pernah bisa di-bind (mencegah IDOR lintas tenant).
  */
 class ResolveTeam
 {
@@ -24,9 +28,14 @@ class ResolveTeam
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $team = $request->route('team');
+        $route = $request->route();
+        $value = $route?->parameter('team');
 
-        if (! $team instanceof Team) {
+        $team = $value instanceof Team
+            ? $value
+            : (is_string($value) ? Team::query()->where('slug', strtolower($value))->first() : null);
+
+        if ($team === null) {
             abort(404);
         }
 
@@ -34,6 +43,7 @@ class ResolveTeam
             abort(403, 'Akun tim ini sedang dinonaktifkan. Hubungi admin layanan.');
         }
 
+        $route->setParameter('team', $team);
         $this->current->set($team);
         URL::defaults(['team' => $team->slug]);
         View::share('team', $team);

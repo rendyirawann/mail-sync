@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property string $name
  * @property string $paper
  * @property string $body
- * @property list<array{key: string, label: string, type: string, required?: bool}> $fields
+ * @property list<array{key: string, label: string, type?: string, required?: bool, default?: string}> $fields
  */
 class LetterTemplate extends Model
 {
