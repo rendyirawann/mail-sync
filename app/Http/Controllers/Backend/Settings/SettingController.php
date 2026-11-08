@@ -71,8 +71,9 @@ class SettingController extends Controller
             'footer_linkedin' => ['nullable', 'url', 'max:200'],
 
             // --- Uploads ---
-            'site_logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,svg,webp', 'max:2048'],
-            'site_favicon' => ['nullable', 'file', 'mimes:png,ico,svg', 'max:512'],
+            // SVG ditolak: file SVG bisa membawa <script> (stored XSS) saat dibuka langsung.
+            'site_logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
+            'site_favicon' => ['nullable', 'file', 'mimes:png,ico', 'max:512'],
             'site_og_image' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
         ]);
 
@@ -152,7 +153,8 @@ class SettingController extends Controller
             mkdir($directory, 0755, true);
         }
 
-        $filename = $prefix . '-' . time() . '.' . Str::lower($file->getClientOriginalExtension());
+        // Nama acak + ekstensi hasil deteksi MIME (bukan dari nama file klien).
+        $filename = $prefix . '-' . Str::random(32) . '.' . ($file->guessExtension() ?: 'png');
         $file->move($directory, $filename);
 
         $previous = Setting::get($key);
@@ -172,10 +174,10 @@ class SettingController extends Controller
         }
 
         $protected = [
-            BrandingService::DIR . '/logo-mark.svg',
-            BrandingService::DIR . '/logo-full.svg',
-            BrandingService::DIR . '/favicon.ico',
-            BrandingService::DIR . '/og-image.png',
+            'logo-icon.svg',
+            'logo.svg',
+            'favicon.ico',
+            'og-image.png',
         ];
 
         if (in_array($previous, $protected, true) || str_ends_with($previous, $justUploaded)) {

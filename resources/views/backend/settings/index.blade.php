@@ -123,14 +123,14 @@
                                 <div class="mb-5">
                                     <label class="form-label fw-semibold" for="site_logo">Unggah Logo</label>
                                     <input type="file" class="form-control form-control-solid" id="site_logo"
-                                        name="site_logo" accept=".png,.jpg,.jpeg,.svg,.webp" />
+                                        name="site_logo" accept=".png,.jpg,.jpeg,.webp" />
                                     <div class="form-text">PNG, JPG, SVG atau WebP. Maks 2 MB.</div>
                                 </div>
 
                                 <div class="mb-5">
                                     <label class="form-label fw-semibold" for="site_favicon">Unggah Favicon</label>
                                     <input type="file" class="form-control form-control-solid" id="site_favicon"
-                                        name="site_favicon" accept=".png,.ico,.svg" />
+                                        name="site_favicon" accept=".png,.ico" />
                                     <div class="form-text">ICO, PNG atau SVG persegi. Maks 512 KB.</div>
                                 </div>
 

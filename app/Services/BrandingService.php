@@ -29,56 +29,64 @@ class BrandingService
     ];
 
     /**
-     * Build every brand asset for the given application name.
+     * Bangun seluruh aset brand (logo, favicon, OG image, manifest) ke public/.
      *
-     * @return array<string,string> map of logical name => public-relative path
+     * Nama file mengikuti konvensi umum browser/PWA sehingga bisa dirujuk
+     * langsung tanpa konfigurasi tambahan.
+     *
+     * @param  string  $appName  Nama aplikasi yang ditampilkan di logo.
+     * @param  string|null  $description  Deskripsi singkat untuk OG image & manifest.
+     * @return array<string,string> Peta nama logis => path relatif public/.
+     *
+     * @throws \RuntimeException Jika folder public tidak bisa ditulis.
      */
-    public function generate(string $appName): array
+    public function generate(string $appName, ?string $description = null): array
     {
         $appName = trim($appName) !== '' ? trim($appName) : 'App';
-        $dir = public_path(self::DIR);
+        $description ??= (string) config('app.description');
+        $dir = public_path();
 
-        if (! is_dir($dir) && ! mkdir($dir, 0755, true) && ! is_dir($dir)) {
-            throw new \RuntimeException("Unable to create branding directory: {$dir}");
+        if (! is_writable($dir)) {
+            throw new \RuntimeException("Folder public tidak dapat ditulis: {$dir}");
         }
 
         $palette = $this->palette($appName);
         $initials = $this->initials($appName);
 
         // --- Vector ---------------------------------------------------------
-        file_put_contents("{$dir}/logo-mark.svg", $this->markSvg($initials, $palette));
-        file_put_contents("{$dir}/logo-full.svg", $this->fullSvg($appName, $initials, $palette));
+        file_put_contents("{$dir}/logo-icon.svg", $this->markSvg($initials, $palette));
+        file_put_contents("{$dir}/favicon.svg", $this->markSvg($initials, $palette));
+        file_put_contents("{$dir}/logo.svg", $this->fullSvg($appName, $initials, $palette, '#0f172a'));
+        file_put_contents("{$dir}/logo-light.svg", $this->fullSvg($appName, $initials, $palette, '#ffffff'));
 
         // --- Raster ---------------------------------------------------------
         $master = $this->renderMark(1024, $initials, $palette);
 
-        foreach ([16, 32, 48, 64, 180, 192, 512] as $size) {
-            $name = match ($size) {
-                180 => 'apple-touch-icon.png',
-                192, 512 => "icon-{$size}.png",
-                default => "favicon-{$size}.png",
-            };
-            $this->savePng($master, $size, "{$dir}/{$name}");
-        }
+        $this->savePng($master, 32, "{$dir}/favicon-32x32.png");
+        $this->savePng($master, 180, "{$dir}/apple-touch-icon.png");
+        $this->savePng($master, 192, "{$dir}/android-chrome-192x192.png");
+        $this->savePng($master, 512, "{$dir}/android-chrome-512x512.png");
 
         file_put_contents("{$dir}/favicon.ico", $this->ico($master, [16, 32, 48]));
 
-        $og = $this->renderOgImage($appName, $initials, $palette);
+        $og = $this->renderOgImage($appName, $initials, $palette, $description);
         imagepng($og, "{$dir}/og-image.png", 9);
         imagedestroy($og);
 
-        file_put_contents("{$dir}/site.webmanifest", $this->manifest($appName, $palette));
+        file_put_contents("{$dir}/site.webmanifest", $this->manifest($appName, $palette, $description));
 
         imagedestroy($master);
 
         return [
-            'logo' => self::DIR . '/logo-mark.svg',
-            'logo_full' => self::DIR . '/logo-full.svg',
-            'favicon' => self::DIR . '/favicon.ico',
-            'favicon_png' => self::DIR . '/favicon-32.png',
-            'apple_touch_icon' => self::DIR . '/apple-touch-icon.png',
-            'og_image' => self::DIR . '/og-image.png',
-            'manifest' => self::DIR . '/site.webmanifest',
+            'logo' => 'logo-icon.svg',
+            'logo_full' => 'logo.svg',
+            'logo_light' => 'logo-light.svg',
+            'favicon' => 'favicon.ico',
+            'favicon_svg' => 'favicon.svg',
+            'favicon_png' => 'favicon-32x32.png',
+            'apple_touch_icon' => 'apple-touch-icon.png',
+            'og_image' => 'og-image.png',
+            'manifest' => 'site.webmanifest',
             'theme_color' => $palette['primary'],
         ];
     }
@@ -86,7 +94,7 @@ class BrandingService
     /** True when a previously generated asset set is present on disk. */
     public function exists(): bool
     {
-        return is_file(public_path(self::DIR . '/logo-mark.svg'));
+        return is_file(public_path('logo-icon.svg'));
     }
 
     // ------------------------------------------------------------------
@@ -96,6 +104,12 @@ class BrandingService
     /** Up to two uppercase initials taken from the application name. */
     public function initials(string $appName): string
     {
+        $configured = trim((string) config('branding.short', ''));
+
+        if ($configured !== '') {
+            return Str::upper(mb_substr($configured, 0, 3));
+        }
+
         $words = preg_split('/[^\p{L}\p{N}]+/u', $appName, -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
         if (count($words) >= 2) {
@@ -119,6 +133,13 @@ class BrandingService
      */
     public function palette(string $appName): array
     {
+        $primary = (string) config('branding.primary', '');
+        $secondary = (string) config('branding.secondary', '');
+
+        if ($this->isHex($primary) && $this->isHex($secondary)) {
+            return ['primary' => $primary, 'secondary' => $secondary, 'accent' => '#22d3ee'];
+        }
+
         $hue = hexdec(substr(md5(Str::lower($appName)), 0, 4)) % 360;
 
         return [
@@ -136,7 +157,7 @@ class BrandingService
     {
         $id = 'g' . substr(md5($initials . $palette['primary']), 0, 6);
         $text = htmlspecialchars($initials, ENT_QUOTES | ENT_XML1, 'UTF-8');
-        $fontSize = mb_strlen($initials) > 1 ? 176 : 240;
+        $fontSize = mb_strlen($initials) > 2 ? 140 : (mb_strlen($initials) > 1 ? 176 : 240);
         $fontStack = "'Plus Jakarta Sans','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif";
 
         return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="' . $text . '">'
@@ -145,13 +166,13 @@ class BrandingService
             . '<stop offset="1" stop-color="' . $palette['secondary'] . '"/>'
             . '</linearGradient></defs>'
             . '<rect width="512" height="512" rx="116" fill="url(#' . $id . ')"/>'
-            . '<path d="M256 92 424 190 256 288 88 190Z" fill="#ffffff" fill-opacity=".16"/>'
+            . '<path d="M96 132h320L256 268Z" fill="#ffffff" fill-opacity=".16"/><path d="M96 380h320" stroke="#ffffff" stroke-opacity=".28" stroke-width="18" stroke-linecap="round"/>'
             . '<text x="256" y="262" text-anchor="middle" dominant-baseline="central" font-family="' . $fontStack . '"'
             . ' font-size="' . $fontSize . '" font-weight="800" letter-spacing="-6" fill="#ffffff">' . $text . '</text>'
             . '</svg>';
     }
 
-    private function fullSvg(string $appName, string $initials, array $palette): string
+    private function fullSvg(string $appName, string $initials, array $palette, string $textColor): string
     {
         $id = 'f' . substr(md5($appName), 0, 6);
         $name = htmlspecialchars($appName, ENT_QUOTES | ENT_XML1, 'UTF-8');
@@ -165,27 +186,30 @@ class BrandingService
             . '<stop offset="1" stop-color="' . $palette['secondary'] . '"/>'
             . '</linearGradient></defs>'
             . '<rect x="8" y="12" width="104" height="104" rx="24" fill="url(#' . $id . ')"/>'
-            . '<path d="M60 32 94 52 60 72 26 52Z" fill="#ffffff" fill-opacity=".18"/>'
+            . '<path d="M26 36h68L60 66Z" fill="#ffffff" fill-opacity=".18"/>'
             . '<text x="60" y="68" text-anchor="middle" dominant-baseline="central" font-family="' . $fontStack . '"'
             . ' font-size="38" font-weight="800" letter-spacing="-1.5" fill="#ffffff">' . $text . '</text>'
             . '<text x="130" y="68" dominant-baseline="central" font-family="' . $fontStack . '"'
-            . ' font-size="42" font-weight="800" letter-spacing="-1" fill="currentColor">' . $name . '</text>'
+            . ' font-size="42" font-weight="800" letter-spacing="-1" fill="' . $textColor . '">' . $name . '</text>'
             . '</svg>';
     }
 
-    private function manifest(string $appName, array $palette): string
+    private function manifest(string $appName, array $palette, string $description): string
     {
-        return json_encode([
+        return (string) json_encode([
             'name' => $appName,
             'short_name' => Str::limit($appName, 12, ''),
+            'description' => $description,
+            'start_url' => '/',
             'icons' => [
-                ['src' => '/' . self::DIR . '/icon-192.png', 'sizes' => '192x192', 'type' => 'image/png'],
-                ['src' => '/' . self::DIR . '/icon-512.png', 'sizes' => '512x512', 'type' => 'image/png'],
+                ['src' => '/android-chrome-192x192.png', 'sizes' => '192x192', 'type' => 'image/png'],
+                ['src' => '/android-chrome-512x512.png', 'sizes' => '512x512', 'type' => 'image/png'],
+                ['src' => '/favicon.svg', 'sizes' => 'any', 'type' => 'image/svg+xml'],
             ],
             'theme_color' => $palette['primary'],
             'background_color' => '#ffffff',
             'display' => 'standalone',
-        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+        ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
 
     // ------------------------------------------------------------------
@@ -222,11 +246,20 @@ class BrandingService
         // Faint facet echoing the SVG mark.
         $veil = imagecolorallocatealpha($img, 255, 255, 255, 107);
         imagefilledpolygon($img, [
-            (int) ($size * 0.5), (int) ($size * 0.18),
-            (int) ($size * 0.828), (int) ($size * 0.371),
-            (int) ($size * 0.5), (int) ($size * 0.5625),
-            (int) ($size * 0.172), (int) ($size * 0.371),
+            (int) ($size * 0.1875), (int) ($size * 0.258),
+            (int) ($size * 0.8125), (int) ($size * 0.258),
+            (int) ($size * 0.5), (int) ($size * 0.523),
         ], $veil);
+        imagesetthickness($img, max(1, (int) round($size * 0.035)));
+        imageline(
+            $img,
+            (int) ($size * 0.1875),
+            (int) ($size * 0.742),
+            (int) ($size * 0.8125),
+            (int) ($size * 0.742),
+            imagecolorallocatealpha($img, 255, 255, 255, 92),
+        );
+        imagesetthickness($img, 1);
 
         $this->drawMonogram($img, $size, $initials);
 
@@ -288,7 +321,7 @@ class BrandingService
             return;
         }
 
-        $fontSize = $size * (mb_strlen($initials) > 1 ? 0.30 : 0.42);
+        $fontSize = $size * (mb_strlen($initials) > 2 ? 0.24 : (mb_strlen($initials) > 1 ? 0.30 : 0.42));
         $box = @imagettfbbox($fontSize, 0, $font, $initials);
 
         if ($box === false) {
@@ -385,7 +418,7 @@ class BrandingService
     }
 
     /** 1200x630 Open Graph card: gradient ground, mark, and the app name. */
-    private function renderOgImage(string $appName, string $initials, array $palette): \GdImage
+    private function renderOgImage(string $appName, string $initials, array $palette, string $description): \GdImage
     {
         $w = 1200;
         $h = 630;
@@ -420,8 +453,8 @@ class BrandingService
         if ($font !== null) {
             $white = imagecolorallocate($img, 255, 255, 255);
             $muted = imagecolorallocatealpha($img, 255, 255, 255, 40);
-            @imagettftext($img, 62, 0, 428, 315, $white, $font, Str::limit($appName, 18, ''));
-            @imagettftext($img, 26, 0, 432, 372, $muted, $font, 'Admin Dashboard');
+            @imagettftext($img, 62, 0, 428, 290, $white, $font, Str::limit($appName, 18, ''));
+            $this->drawWrapped($img, $font, $description, 432, 352, 680, $muted);
         }
 
         return $img;
@@ -430,6 +463,39 @@ class BrandingService
     // ------------------------------------------------------------------
     // Colour utilities
     // ------------------------------------------------------------------
+
+    /**
+     * Tulis teks multi-baris; GD tidak punya text wrapping bawaan.
+     * Maksimal 4 baris agar tidak menabrak tepi bawah OG image.
+     */
+    private function drawWrapped(\GdImage $img, string $font, string $text, int $x, int $y, int $maxWidth, int $color): void
+    {
+        $line = '';
+        $lines = [];
+
+        foreach (preg_split('/\s+/u', trim($text)) ?: [] as $word) {
+            $candidate = trim($line . ' ' . $word);
+            $box = @imagettfbbox(22, 0, $font, $candidate);
+
+            if ($box !== false && ($box[2] - $box[0]) > $maxWidth && $line !== '') {
+                $lines[] = $line;
+                $line = $word;
+            } else {
+                $line = $candidate;
+            }
+        }
+
+        $lines[] = $line;
+
+        foreach (array_slice($lines, 0, 4) as $i => $row) {
+            @imagettftext($img, 22, 0, $x, $y + $i * 36, $color, $font, $row);
+        }
+    }
+
+    private function isHex(string $value): bool
+    {
+        return preg_match('/^#[0-9a-f]{6}$/i', $value) === 1;
+    }
 
     /** @return array{0:int,1:int,2:int} */
     private function hexToRgb(string $hex): array
