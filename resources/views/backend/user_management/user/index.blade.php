@@ -671,7 +671,6 @@
                             type: "GET",
                             dataType: "json",
                             success: function(result) {
-                                console.log(result);
                                 $("#EditRowModalBody").html(result.html);
                                 $("#Modal_Edit_Data").modal("show");
                             },
