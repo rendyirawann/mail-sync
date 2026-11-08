@@ -71,6 +71,15 @@ return [
     */
     'description' => env('APP_DESCRIPTION', 'Aplikasi manajemen surat online: surat masuk, disposisi, surat keluar ber-QR, dan arsip untuk tim & instansi.'),
 
+    /*
+    | Akun Superadmin awal (dipakai SuperAdminSeeder saja). Kosongkan password
+    | untuk dibuatkan acak; hapus nilainya dari .env setelah login pertama.
+    */
+    'superadmin' => [
+        'email' => env('SUPERADMIN_EMAIL', 'superadmin@example.com'),
+        'password' => env('SUPERADMIN_PASSWORD'),
+    ],
+
     'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta'),
 
     /*
