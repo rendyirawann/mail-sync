@@ -8,7 +8,7 @@ Panduan memasang aplikasi di VPS baru, dari server kosong sampai siap dipakai pe
 | IP server | `76.13.23.58` (DNS record A, TTL 14400) |
 | OS yang diasumsikan | Ubuntu 22.04 / 24.04 LTS, akses root/sudo |
 | Stack | Nginx · PHP 8.4-FPM · PostgreSQL 16 · Node 20 (hanya untuk build) · Supervisor · Certbot |
-| Folder aplikasi | `/var/www/disposisi-in` |
+| Folder aplikasi | `/var/www/html/disposisi-in` (Nginx root = `/var/www/html/disposisi-in/public`, bukan `/var/www/html`) |
 | User aplikasi | `www-data` |
 | Repo | `https://github.com/rendyirawann/mail-sync` (branch `feat/saas-surat`, atau `main` setelah digabung) |
 
@@ -82,11 +82,13 @@ PostgreSQL bawaan hanya mendengarkan `localhost`. **Jangan** membuka port 5432 k
 
 ## 4. Ambil kode
 
+> Kode diletakkan di **subfolder** `/var/www/html/disposisi-in`, dan Nginx wajib menunjuk ke `.../disposisi-in/public` (langkah 7). Jangan jadikan `/var/www/html` sebagai root situs, karena `.env` dan file sensitif lain bisa terbuka lewat browser.
+
 ```bash
-sudo mkdir -p /var/www/disposisi-in
-sudo chown $USER:www-data /var/www/disposisi-in
-git clone -b feat/saas-surat https://github.com/rendyirawann/mail-sync.git /var/www/disposisi-in
-cd /var/www/disposisi-in
+sudo mkdir -p /var/www/html/disposisi-in
+sudo chown $USER:www-data /var/www/html/disposisi-in
+git clone -b feat/saas-surat https://github.com/rendyirawann/mail-sync.git /var/www/html/disposisi-in
+cd /var/www/html/disposisi-in
 ```
 
 ## 5. Konfigurasi `.env`
@@ -161,7 +163,7 @@ php -r 'echo random_int(100000,999999), PHP_EOL, bin2hex(random_bytes(10)), PHP_
 ## 6. Install, build, migrate
 
 ```bash
-cd /var/www/disposisi-in
+cd /var/www/html/disposisi-in
 composer install --no-dev --optimize-autoloader
 php artisan key:generate --force
 npm ci && npm run build
@@ -174,9 +176,9 @@ php artisan app:branding --apply     # logo, favicon, OG image
 php artisan storage:link
 
 # Hak akses folder
-sudo chown -R $USER:www-data /var/www/disposisi-in
-sudo find /var/www/disposisi-in -type d -exec chmod 755 {} \;
-sudo find /var/www/disposisi-in -type f -exec chmod 644 {} \;
+sudo chown -R $USER:www-data /var/www/html/disposisi-in
+sudo find /var/www/html/disposisi-in -type d -exec chmod 755 {} \;
+sudo find /var/www/html/disposisi-in -type f -exec chmod 644 {} \;
 sudo chmod -R ug+rwx storage bootstrap/cache
 chmod 600 .env && sudo chown $USER:www-data .env && chmod 640 .env
 
@@ -195,7 +197,7 @@ server {
     listen [::]:80;
     server_name disposisi-in.hustlesync.my.id;
 
-    root /var/www/disposisi-in/public;
+    root /var/www/html/disposisi-in/public;
     index index.php;
     charset utf-8;
 
@@ -287,24 +289,24 @@ sudo systemctl restart php8.4-fpm
 
 ```ini
 [program:disposisi-in-queue]
-command=php /var/www/disposisi-in/artisan queue:work --sleep=3 --tries=3 --max-time=3600
+command=php /var/www/html/disposisi-in/artisan queue:work --sleep=3 --tries=3 --max-time=3600
 user=www-data
 autostart=true
 autorestart=true
 numprocs=1
 redirect_stderr=true
-stdout_logfile=/var/www/disposisi-in/storage/logs/queue.log
+stdout_logfile=/var/www/html/disposisi-in/storage/logs/queue.log
 stopwaitsecs=3600
 
 ; Opsional: notifikasi realtime (lonceng langsung muncul tanpa refresh).
 ; Aktifkan bersama BROADCAST_CONNECTION=reverb di .env.
 [program:disposisi-in-reverb]
-command=php /var/www/disposisi-in/artisan reverb:start --host=127.0.0.1 --port=8080
+command=php /var/www/html/disposisi-in/artisan reverb:start --host=127.0.0.1 --port=8080
 user=www-data
 autostart=true
 autorestart=true
 redirect_stderr=true
-stdout_logfile=/var/www/disposisi-in/storage/logs/reverb.log
+stdout_logfile=/var/www/html/disposisi-in/storage/logs/reverb.log
 ```
 
 ```bash
@@ -324,7 +326,7 @@ sudo crontab -u www-data -e
 Tambahkan:
 
 ```cron
-* * * * * cd /var/www/disposisi-in && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /var/www/html/disposisi-in && php artisan schedule:run >> /dev/null 2>&1
 ```
 
 ## 11. Backup harian
@@ -338,7 +340,7 @@ DIR=/var/backups/disposisi-in
 mkdir -p "$DIR"
 STAMP=$(date +%F)
 sudo -u postgres pg_dump disposisi_in | gzip > "$DIR/db-$STAMP.sql.gz"
-tar -czf "$DIR/files-$STAMP.tar.gz" -C /var/www/disposisi-in storage/app .env
+tar -czf "$DIR/files-$STAMP.tar.gz" -C /var/www/html/disposisi-in storage/app .env
 find "$DIR" -type f -mtime +14 -delete   # simpan 14 hari
 ```
 
@@ -351,12 +353,12 @@ Salin backup ke luar server secara berkala (Google Drive, rclone, atau komputer 
 
 ## 12. Update aplikasi (deploy berikutnya)
 
-Simpan sebagai `/var/www/disposisi-in/deploy.sh` (jangan di-commit bila berisi info sensitif):
+Simpan sebagai `/var/www/html/disposisi-in/deploy.sh` (jangan di-commit bila berisi info sensitif):
 
 ```bash
 #!/bin/bash
 set -e
-cd /var/www/disposisi-in
+cd /var/www/html/disposisi-in
 php artisan down --retry=30
 git pull --ff-only
 composer install --no-dev --optimize-autoloader
