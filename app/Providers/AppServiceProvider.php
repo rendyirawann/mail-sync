@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Support\Brand;
 use App\View\Composers\NotificationComposer;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
@@ -23,11 +24,25 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->configureProxies();
         $this->configureUrls();
         $this->configureAuthorization();
         $this->configurePasswordPolicy();
         $this->configureRateLimiting();
         $this->shareBranding();
+    }
+
+    /**
+     * Percayai header X-Forwarded-* hanya dari proxy yang dikonfigurasi agar
+     * $request->ip() adalah IP klien asli (penting untuk rate limiter & log).
+     */
+    private function configureProxies(): void
+    {
+        $proxies = trim((string) config('security.trusted_proxies', ''));
+
+        if ($proxies !== '') {
+            TrustProxies::at($proxies === '*' ? '*' : array_map('trim', explode(',', $proxies)));
+        }
     }
 
     /** Force canonical absolute URLs behind TLS in production. */

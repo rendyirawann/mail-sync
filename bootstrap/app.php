@@ -45,12 +45,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // endpoint that authenticates by signature instead (e.g. a webhook).
         $middleware->validateCsrfTokens(except: []);
 
-        // Only trust a reverse proxy when one is actually configured —
-        // trusting "*" without a proxy would let a client spoof its own IP
-        // through X-Forwarded-For and defeat the rate limiter.
-        if ($proxies = env('TRUSTED_PROXIES')) {
-            $middleware->trustProxies(at: $proxies === '*' ? '*' : explode(',', $proxies));
-        }
+        // Proxy tepercaya diatur di AppServiceProvider::configureProxies() dari
+        // config('security.trusted_proxies') — env() di sini bernilai null
+        // setelah `php artisan config:cache`.
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Never leak stack traces or SQL through an XHR response.

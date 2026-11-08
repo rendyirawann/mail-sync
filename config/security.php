@@ -67,6 +67,20 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Trusted Proxies
+    |--------------------------------------------------------------------------
+    |
+    | Isi dengan IP proxy (dipisah koma) atau "*" HANYA bila aplikasi berada di
+    | belakang nginx/Cloudflare/load balancer. Tanpa ini, semua user terbaca
+    | sebagai IP proxy dan saling berbagi kuota rate limit. Mengisi "*" tanpa
+    | proxy justru membuat klien bisa memalsukan IP lewat X-Forwarded-For.
+    |
+    */
+
+    'trusted_proxies' => env('TRUSTED_PROXIES'),
+
+    /*
+    |--------------------------------------------------------------------------
     | Rate Limits (requests per minute)
     |--------------------------------------------------------------------------
     */
