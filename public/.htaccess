@@ -1,9 +1,27 @@
-<IfModule mod_rewrite.c>
-    <IfModule mod_negotiation.c>
-        Options -MultiViews -Indexes
-    </IfModule>
+# Tanpa directory listing — dipasang di luar <IfModule> agar selalu berlaku.
+Options -Indexes
 
+<IfModule mod_negotiation.c>
+    Options -MultiViews
+</IfModule>
+
+# Tolak akses ke dotfile (.env, .git, .htpasswd) dan file sensitif bila
+# document root keliru diarahkan atau file tersalin ke public/.
+<IfModule mod_authz_core.c>
+    <FilesMatch "^\.(?!well-known)">
+        Require all denied
+    </FilesMatch>
+    <FilesMatch "(?i)(composer\.(json|lock)|package(-lock)?\.json|\.env.*|artisan|phpunit\.xml|.*\.(log|sql|bak|sh|ini))$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
     RewriteEngine On
+
+    # Blokir path ke folder tersembunyi/vendor yang tidak seharusnya ada di public/.
+    RewriteRule (^|/)\.(?!well-known/) - [F,L]
+    RewriteRule ^(vendor|storage/logs|storage/framework)/ - [F,L]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

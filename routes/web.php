@@ -82,8 +82,9 @@ Route::middleware(['auth', 'forbid-banned-user'])->group(function () {
     });
 
     // --- Profile & security pages (resource controllers keep their own verbs) ---
-    Route::resource('/admin/my-profile', ProfileController::class);
-    Route::resource('/admin/my-security', SecurityController::class);
+    // Hanya method yang benar-benar ada; sisanya dulu terdaftar dan berujung 500.
+    Route::resource('/admin/my-profile', ProfileController::class)->only(['index', 'edit', 'update']);
+    Route::resource('/admin/my-security', SecurityController::class)->only(['index', 'edit', 'update']);
 
     // --- Settings page (read) ---
     Route::get('/admin/settings', [SettingController::class, 'index'])

@@ -25,7 +25,7 @@ class SecurityController extends Controller
 
    public function edit($id)
     {
-        $user = User::findOrFail($id);
+        $user = $this->ownAccountOrFail($id);
         $html = view('backend.my_profile.security.edit', compact('user'))->render();
 
         return response()->json(['html' => $html]);
@@ -33,12 +33,13 @@ class SecurityController extends Controller
 
     public function update(Request $request, $id)
 {
+    $user = $this->ownAccountOrFail($id);
     $formattedTime = Carbon::now()->diffForHumans();
 
     $validator = \Validator::make($request->all(), [
-        'email'                 => 'required|email',
+        'email'                 => 'required|email|max:255|unique:users,email,' . $user->getKey(),
         'current_password'      => ['required', new MatchOldPassword],
-        'new_password'          => ['required', 'min:8'],
+        'new_password'          => ['required', \Illuminate\Validation\Rules\Password::defaults()],
         'new_confirm_password'  => 'required|same:new_password'
     ], [
         'email.required'                => 'Email wajib diisi',
@@ -55,8 +56,6 @@ class SecurityController extends Controller
 
     try {
         DB::beginTransaction();
-
-        $user = User::findOrFail($id);
 
         // 📌 Simpan data lama untuk audit
         $old = $user->toArray();
@@ -89,10 +88,19 @@ class SecurityController extends Controller
             'error' => 'Terjadi kesalahan di aplikasi, hubungi Developer.',
             'time' => $formattedTime,
             'judul' => 'Aplikasi Error',
-            'errorMessage' => $e->getMessage()
+            'errorMessage' => $this->debugMessage($e)
         ]);
     }
 }
+
+    /**
+     * Route lama `change.password` (POST /admin/my-security) — dulu menunjuk ke
+     * method yang tidak ada (500). Sekarang memakai alur update untuk akun sendiri.
+     */
+    public function store(Request $request)
+    {
+        return $this->update($request, (string) Auth::id());
+    }
 
     public function logoutOtherDevices(Request $request)
     {

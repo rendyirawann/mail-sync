@@ -57,7 +57,7 @@ class AccountController extends Controller
         
         $html = view('backend.my_profile.change_pic', 
         [
-        'user' => $user->findOrFail($id)
+        'user' => $this->ownAccountOrFail($id)
         ])->render();
        
                                                                 																						
@@ -89,7 +89,7 @@ class AccountController extends Controller
 
         DB::beginTransaction();
 
-        $user = User::findOrFail($id);
+        $user = $this->ownAccountOrFail($id);
 
         // ===============================
         // FULL OLD SNAPSHOT
@@ -107,10 +107,9 @@ class AccountController extends Controller
             }
 
             $file = $request->file('avatar');
-            $extension = $file->getClientOriginalExtension();
-
-            // Nama file aman & standar
-            $filename = 'avatar-'.$user->id.'-'.time().'.'.$extension;
+            // Ekstensi dari deteksi MIME (bukan nama file klien) + nama acak.
+            $extension = $file->guessExtension() ?: 'jpg';
+            $filename = 'avatar-'.$user->id.'-'.\Illuminate\Support\Str::random(24).'.'.$extension;
 
             // Simpan file
             Storage::disk('public')->putFileAs(
@@ -152,7 +151,7 @@ class AccountController extends Controller
             'error' => 'Terjadi kesalahan di aplikasi, hubungi Developer.',
             'time' => $formattedTime,
             'judul' => 'Aplikasi Error',
-            'errorMessage' => $e->getMessage(),
+            'errorMessage' => $this->debugMessage($e),
         ], 500);
     }
 }

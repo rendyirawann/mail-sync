@@ -56,7 +56,7 @@ class RoleController extends Controller implements HasMiddleware
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'Gagal generate: ' . $e->getMessage()
+                'message' => 'Gagal generate: ' . ($this->debugMessage($e) ?? 'terjadi kesalahan pada server.')
             ], 500);
         }
     }
@@ -194,7 +194,7 @@ class RoleController extends Controller implements HasMiddleware
             ]);
         } catch (\Exception $e) {
             \DB::rollback();
-            $errorMessage = $e->getMessage(); // Mendapatkan pesan kesalahan dari Exception
+            $errorMessage = $this->debugMessage($e) ?? 'Terjadi kesalahan pada server.'; // Mendapatkan pesan kesalahan dari Exception
             return response()->json(['error' => 'Terjadi kesalahan di aplikasi, hubungi Developer.', 'time' => $formattedTime, 'judul' => 'Aplikasi Error', 'errorMessage' => $errorMessage]);
         }
     }
@@ -324,7 +324,7 @@ class RoleController extends Controller implements HasMiddleware
             ]);
         } catch (\Exception $e) {
             \DB::rollback();
-            $errorMessage = $e->getMessage();
+            $errorMessage = $this->debugMessage($e) ?? 'Terjadi kesalahan pada server.';
             return response()->json([
                 'error' => 'Terjadi kesalahan di aplikasi, hubungi Developer.',
                 'time' => $formattedTime,
@@ -368,7 +368,7 @@ class RoleController extends Controller implements HasMiddleware
             return response()->json(['success' => 'Data ' . $role->name . ' berhasil dihapus', 'time' => $formattedTime, 'judul' => 'Berhasil']);
         } catch (\Exception $e) {
             \DB::rollback();
-            $errorMessage = $e->getMessage(); // Mendapatkan pesan kesalahan dari Exception
+            $errorMessage = $this->debugMessage($e) ?? 'Terjadi kesalahan pada server.'; // Mendapatkan pesan kesalahan dari Exception
             return response()->json(['error' => 'Data Gagal dihapus', 'time' => $formattedTime, 'judul' => 'Gagal', 'errorMessage' => $errorMessage]);
         }
     }
@@ -411,7 +411,7 @@ class RoleController extends Controller implements HasMiddleware
             }
         } catch (\Exception $e) {
             \DB::rollback();
-            $errorMessage = $e->getMessage(); // Mendapatkan pesan kesalahan dari Exception
+            $errorMessage = $this->debugMessage($e) ?? 'Terjadi kesalahan pada server.'; // Mendapatkan pesan kesalahan dari Exception
             return response()->json(['error' => 'Data Gagal dihapus', 'time' => $formattedTime, 'judul' => 'Gagal', 'errorMessage' => $errorMessage]);
         }
     }

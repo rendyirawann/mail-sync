@@ -1,0 +1,11 @@
+# Pengaman bila document root keliru diarahkan ke folder project (bukan public/).
+# Production WAJIB memakai document root = public/.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+<IfModule mod_authz_core.c>
+    <FilesMatch "^\.|(?i)(composer\.(json|lock)|package(-lock)?\.json|artisan|phpunit\.xml)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>

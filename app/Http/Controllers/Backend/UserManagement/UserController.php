@@ -351,7 +351,7 @@ class UserController extends Controller implements HasMiddleware
             ], 201);
         } catch (\Exception $e) {
             \DB::rollback();
-            $errorMessage = $e->getMessage(); // Mendapatkan pesan kesalahan dari Exception
+            $errorMessage = $this->debugMessage($e) ?? 'Terjadi kesalahan pada server.'; // Mendapatkan pesan kesalahan dari Exception
             return response()->json([
                 'error' => 'Terjadi kesalahan di aplikasi, hubungi Developer.',
                 'time' => $formattedTime,
@@ -707,7 +707,7 @@ class UserController extends Controller implements HasMiddleware
             ]);
         } catch (\Exception $e) {
             \DB::rollback();
-            $errorMessage = $e->getMessage();
+            $errorMessage = $this->debugMessage($e) ?? 'Terjadi kesalahan pada server.';
             return response()->json([
                 'error' => 'Terjadi kesalahan di aplikasi, hubungi Developer.',
                 'time' => $formattedTime,
@@ -770,7 +770,7 @@ class UserController extends Controller implements HasMiddleware
                 'error'        => 'Data Gagal dihapus',
                 'time'         => $formattedTime,
                 'judul'        => 'Gagal',
-                'errorMessage' => $e->getMessage()
+                'errorMessage' => $this->debugMessage($e)
             ]);
         }
     }
@@ -826,7 +826,7 @@ class UserController extends Controller implements HasMiddleware
             }
         } catch (\Exception $e) {
             \DB::rollback();
-            $errorMessage = $e->getMessage(); // Mendapatkan pesan kesalahan dari Exception
+            $errorMessage = $this->debugMessage($e) ?? 'Terjadi kesalahan pada server.'; // Mendapatkan pesan kesalahan dari Exception
             return response()->json(['error' => 'Data Gagal dihapus', 'time' => $formattedTime, 'judul' => 'Gagal', 'errorMessage' => $errorMessage]);
         }
     }

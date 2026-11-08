@@ -36,8 +36,7 @@ class ProfileController extends Controller
     
 public function edit($id)
 {
-    // Fetch the user with the related karyawan model
-    $user = User::findOrFail($id);
+    $user = $this->ownAccountOrFail($id);
     
     // Prepare the view with the user data and selected regions
     $html = view('backend.my_profile.profile.edit', [
@@ -52,6 +51,7 @@ public function edit($id)
 
 public function update(Request $request, $id)
 {
+    $id = $this->ownAccountOrFail($id)->getKey();
     $formattedTime = Carbon::now()->diffForHumans();
 
     // ===== VALIDASI =====
@@ -94,7 +94,7 @@ public function update(Request $request, $id)
         DB::beginTransaction();
 
         // Ambil data user
-        $user = User::findOrFail($id);
+        $user = $this->ownAccountOrFail($id);
 
         // === SNAPSHOT OLD FULL ===
         $oldData = $user->toArray();
@@ -134,7 +134,7 @@ public function update(Request $request, $id)
             'error' => 'Terjadi kesalahan di aplikasi, hubungi Developer.',
             'time' => $formattedTime,
             'judul' => 'Aplikasi Error',
-            'errorMessage' => $e->getMessage(),
+            'errorMessage' => $this->debugMessage($e),
         ]);
     }
 }
