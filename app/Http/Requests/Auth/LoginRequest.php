@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\Team;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -63,7 +64,10 @@ class LoginRequest extends FormRequest
         }
 
         // 4. COBA LOGIN
-        if (! Auth::attempt([$field => $loginValue, 'password' => $this->input('password')], $this->boolean('remember'))) {
+        // team_id null = akun platform (/admin/login); terisi = hanya anggota tim pada /{slug}/login.
+        $credentials = [$field => $loginValue, 'team_id' => $this->teamScope(), 'password' => $this->input('password')];
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
 
             // === JIKA LOGIN GAGAL ===
 
@@ -114,6 +118,14 @@ class LoginRequest extends FormRequest
      */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->input('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->input('email')).'|'.($this->teamScope() ?? 'platform').'|'.$this->ip());
+    }
+
+    /** ID tim dari route /{team}/login, atau null untuk login platform. */
+    public function teamScope(): ?string
+    {
+        $team = $this->route('team');
+
+        return $team instanceof Team ? $team->getKey() : null;
     }
 }

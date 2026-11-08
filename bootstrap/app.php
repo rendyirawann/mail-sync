@@ -11,6 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         channels: __DIR__.'/../routes/channels.php',
         health: '/up',
+        // Route tim /{slug}/... dimuat PALING AKHIR agar tidak menimpa /admin, /daftar, dll.
+        then: function (): void {
+            \Illuminate\Support\Facades\Route::middleware('web')->group(base_path('routes/team.php'));
+        },
     )
     ->withMiddleware(function (Middleware $middleware) {
 
@@ -20,7 +24,26 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
             'forbid-banned-user' => \Cog\Laravel\Ban\Http\Middleware\ForbidBannedUser::class,
             'spam' => \App\Http\Middleware\ProtectAgainstSpam::class,
+            'platform' => \App\Http\Middleware\EnsurePlatformUser::class,
+            'team.resolve' => \App\Http\Middleware\ResolveTeam::class,
+            'team.member' => \App\Http\Middleware\EnsureTeamMember::class,
+            'team.writable' => \App\Http\Middleware\EnsureTeamWritable::class,
+            'team.role' => \App\Http\Middleware\EnsureTeamRole::class,
         ]);
+
+        // Tamu di URL tim → login tim; selain itu → login Superadmin.
+        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request): string {
+            $team = $request->route('team');
+
+            return $team instanceof \App\Models\Team ? route('team.login', $team) : route('login');
+        });
+
+        // User yang sudah login membuka halaman tamu → dashboard yang sesuai.
+        $middleware->redirectUsersTo(function (\Illuminate\Http\Request $request): string {
+            $user = $request->user();
+
+            return $user?->team !== null ? route('team.dashboard', $user->team) : route('dashboard');
+        });
 
         // Runs on every request, including assets served through PHP:
         // header hardening first, then the URL-signature guard.

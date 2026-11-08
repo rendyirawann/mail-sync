@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\TeamRole;
 use Cog\Contracts\Ban\Bannable as BannableContract;
 use Cog\Laravel\Ban\Traits\Bannable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Storage; // 1. Ini penawar errornya
@@ -38,6 +40,8 @@ class User extends Authenticatable implements BannableContract
         'password',
         'social_id',
         'social_type',
+        'team_id',
+        'team_role',
     ];
 
     /**
@@ -62,7 +66,38 @@ class User extends Authenticatable implements BannableContract
             'last_login' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'team_role' => TeamRole::class,
         ];
+    }
+
+    /** @return BelongsTo<Team, $this> */
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(Team::class);
+    }
+
+    /** Akun platform (bukan anggota tim) yang memegang peran Superadmin. */
+    public function isSuperadmin(): bool
+    {
+        return $this->team_id === null && $this->hasRole(['Superadmin', 'superadmin']);
+    }
+
+    public function isTeamMember(): bool
+    {
+        return $this->team_id !== null;
+    }
+
+    public function isOwner(): bool
+    {
+        return $this->team_role === TeamRole::Owner;
+    }
+
+    /**
+     * Cek peran tim, mis. $user->hasTeamRole(TeamRole::Owner, TeamRole::Admin).
+     */
+    public function hasTeamRole(TeamRole ...$roles): bool
+    {
+        return $this->team_role !== null && in_array($this->team_role, $roles, true);
     }
 
     /**
