@@ -6,6 +6,15 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    /* Warna brand Mail Sync — selaras dengan config/branding.php */
+    --color-brand-50: #eff6ff;
+    --color-brand-100: #dbeafe;
+    --color-brand-600: #1d4ed8;
+    --color-brand-700: #1e40af;
+    --color-brand-900: #172554;
+    --color-accent-600: #0e7490;
+    --color-accent-400: #22d3ee;
+
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }

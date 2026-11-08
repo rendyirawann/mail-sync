@@ -2,6 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
+// Frontend
+use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\SeoController;
+
 // Dashboard
 use App\Http\Controllers\Backend\Dashboard\DashboardAdminController;
 
@@ -26,8 +30,14 @@ use App\Http\Controllers\Backend\Settings\SettingController;
 |--------------------------------------------------------------------------
 */
 
-// The app has no public front page — everything lives behind the admin login.
-Route::redirect('/', '/admin/login');
+// --- Halaman publik (bisa diindeks) ---
+Route::get('/', HomeController::class)->name('home');
+
+// robots.txt & sitemap.xml dinamis — dikecualikan dari rate limit web.
+Route::withoutMiddleware('throttle:web')->group(function () {
+    Route::get('/robots.txt', [SeoController::class, 'robots'])->name('robots');
+    Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
+});
 
 Route::middleware(['auth', 'forbid-banned-user'])->group(function () {
 

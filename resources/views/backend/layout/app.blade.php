@@ -7,7 +7,7 @@
     {{-- Before the stylesheets, so the theme never flashes. --}}
     @include('partials.theme-boot')
 
-    @include('partials.meta')
+    @include('partials.seo')
 
     <!--begin::Fonts-->
     <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -15,7 +15,7 @@
         }
     </script>
 
-    @include('partials.meta')
+    @include('partials.seo')
 
     {{-- The topology background pulls p5 + Vanta from here. --}}
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
