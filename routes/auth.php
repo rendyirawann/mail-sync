@@ -20,25 +20,25 @@ Route::middleware('guest')->group(function () {
     // toggle takes effect without a deploy.
     Route::get('/admin/register', [RegisteredUserController::class, 'create'])->name('register');
     Route::post('/admin/register', [RegisteredUserController::class, 'store'])
-        ->middleware('throttle:password');
+        ->middleware(['throttle:password', 'spam']);
 
     // --- LOGIN ---
     Route::get('/admin/login', [AuthenticatedSessionController::class, 'create'])->name('login');
     Route::post('/admin/login', [AuthenticatedSessionController::class, 'store'])
-        ->middleware('throttle:login');
+        ->middleware(['throttle:login', 'spam']);
 
     // --- FORGOT PASSWORD ---
     Route::get('/admin/forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
     Route::post('/admin/forgot-password', [PasswordResetLinkController::class, 'store'])
-        ->middleware('throttle:password')
+        ->middleware(['throttle:password', 'spam'])
         ->name('password.email');
 
     // --- RESET PASSWORD ---
     Route::get('/admin/reset-password/{token}', [NewPasswordController::class, 'create'])
         ->name('password.reset');
     Route::post('/admin/reset-password', [NewPasswordController::class, 'store'])
-        ->middleware('throttle:password')
+        ->middleware(['throttle:password', 'spam'])
         ->name('password.store');
 
     // --- SOCIAL LOGIN ---

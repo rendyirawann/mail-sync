@@ -20,6 +20,7 @@
 
         <form method="POST" action="{{ route('register') }}">
             @csrf
+            <x-honeypot />
 
             <div class="auth-field">
                 <label class="auth-label" for="reg-name">Nama lengkap</label>

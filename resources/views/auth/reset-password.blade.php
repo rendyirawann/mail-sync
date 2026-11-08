@@ -20,6 +20,7 @@
 
         <form method="POST" action="{{ route('password.store') }}">
             @csrf
+            <x-honeypot />
             <input type="hidden" name="token" value="{{ $request->route('token') }}" />
 
             <div class="auth-field">

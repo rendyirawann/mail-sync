@@ -30,6 +30,7 @@
 
         <form method="POST" action="{{ route('password.email') }}">
             @csrf
+            <x-honeypot />
 
             <div class="auth-field">
                 <label class="auth-label" for="reset-email">Alamat email</label>

@@ -52,6 +52,15 @@ return [
 
     'channels' => [
 
+        // Event keamanan (login, logout, reset password, 403, spam). Jangan log password/token.
+        'security' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/security.log'),
+            'level' => 'info',
+            'days' => 30,
+            'replace_placeholders' => true,
+        ],
+
         'stack' => [
             'driver' => 'stack',
             'channels' => explode(',', (string) env('LOG_STACK', 'single')),

@@ -71,6 +71,7 @@
         <form method="POST" action="{{ route('login') }}" id="auth-signin-form" novalidate
             data-redirect="{{ route('dashboard') }}">
             @csrf
+            <x-honeypot />
 
             <div class="auth-field">
                 <label class="auth-label" for="auth-identifier">Email / No. WhatsApp / Username</label>
