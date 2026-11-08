@@ -177,7 +177,7 @@ class DashboardAdminController extends Controller
         return $counts
             ->map(fn ($row) => [
                 'user' => $users->get($row->causer_id),
-                'total' => (int) $row->total,
+                'total' => (int) $row->getAttribute('total'),
             ])
             ->filter(fn ($row) => $row['user'] !== null)
             ->values();

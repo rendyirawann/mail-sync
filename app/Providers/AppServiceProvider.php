@@ -103,7 +103,7 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(Login::class, fn (Login $e) => Log::channel('security')->info('Login berhasil', ['user_id' => $e->user->getAuthIdentifier()] + $context()));
         Event::listen(Failed::class, fn (Failed $e) => Log::channel('security')->warning('Login gagal', ['email' => $mask($e->credentials['email'] ?? null)] + $context()));
-        Event::listen(Logout::class, fn (Logout $e) => Log::channel('security')->info('Logout', ['user_id' => $e->user?->getAuthIdentifier()] + $context()));
+        Event::listen(Logout::class, fn (Logout $e) => Log::channel('security')->info('Logout', ['user_id' => $e->user->getAuthIdentifier()] + $context()));
         Event::listen(Lockout::class, fn (Lockout $e) => Log::channel('security')->warning('Login dikunci (throttle)', $context()));
         Event::listen(PasswordReset::class, fn (PasswordReset $e) => Log::channel('security')->info('Password direset', ['user_id' => $e->user->getAuthIdentifier()] + $context()));
     }

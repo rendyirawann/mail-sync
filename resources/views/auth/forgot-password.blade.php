@@ -38,8 +38,8 @@
                     <input type="email" name="email" id="reset-email" class="auth-input @error('email') is-invalid @enderror"
                         value="{{ old('email') }}" placeholder="nama@perusahaan.com"
                         autocomplete="email" required
-                        @if ($errors->
-<x-field-error name="email" />has('email')) aria-invalid="true" @endif />
+                        @if ($errors->has('email')) aria-invalid="true" @endif />
+                    <x-field-error name="email" />
                 </div>
             </div>
 

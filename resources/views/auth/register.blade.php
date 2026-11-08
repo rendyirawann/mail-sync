@@ -27,7 +27,7 @@
                 <div class="auth-input-wrap">
                     <input type="text" name="name" id="reg-name" class="auth-input @error('name') is-invalid @enderror" value="{{ old('name') }}"
                         autocomplete="name" required autofocus />
-<x-field-error name="name" />
+                    <x-field-error name="name" />
                 </div>
             </div>
 
@@ -36,7 +36,7 @@
                 <div class="auth-input-wrap">
                     <input type="email" name="email" id="reg-email" class="auth-input @error('email') is-invalid @enderror" value="{{ old('email') }}"
                         autocomplete="email" required />
-<x-field-error name="email" />
+                    <x-field-error name="email" />
                 </div>
             </div>
 
@@ -45,7 +45,7 @@
                 <div class="auth-input-wrap">
                     <input type="password" name="password" id="reg-password"
                         class="auth-input auth-input--password @error('password') is-invalid @enderror" autocomplete="new-password" required />
-<x-field-error name="password" />
+                    <x-field-error name="password" />
                     <button type="button" class="auth-toggle" data-auth-toggle-password="reg-password"
                         aria-label="Tampilkan password" aria-pressed="false">
                         <i class="ki-outline ki-eye fs-4" data-eye aria-hidden="true"></i>
@@ -59,7 +59,7 @@
                 <div class="auth-input-wrap">
                     <input type="password" name="password_confirmation" id="reg-password-confirm"
                         class="auth-input auth-input--password @error('password_confirmation') is-invalid @enderror" autocomplete="new-password" required />
-<x-field-error name="password_confirmation" />
+                    <x-field-error name="password_confirmation" />
                 </div>
             </div>
 

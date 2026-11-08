@@ -43,7 +43,7 @@ class GeneratePermissions extends Command
 
         $this->info('Scanning routes...');
 
-        foreach ($routes as $route) {
+        foreach ($routes->getRoutes() as $route) {
             $routeName = $route->getName();
 
             // 1. Lewati route yang tidak punya nama
@@ -90,8 +90,9 @@ class GeneratePermissions extends Command
             );
 
             // Update kategori jika berubah
-            if ($permission->category !== $categoryName) {
-                $permission->category = $categoryName;
+            // Kolom "category" ditambahkan lewat migration sendiri, bukan bawaan Spatie.
+            if ($permission->getAttribute('category') !== $categoryName) {
+                $permission->setAttribute('category', $categoryName);
                 $permission->save();
             }
 

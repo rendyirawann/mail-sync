@@ -54,7 +54,7 @@ class LogActivityController extends Controller
             $query->where('created_at', '<=', $to->endOfDay());
         }
 
-        return DataTables::of($query)
+        return DataTables::eloquent($query)
             ->addIndexColumn()
             ->filterColumn('causer_id', function ($query, $keyword) use ($like) {
                 $query->whereHas('causer', fn ($q) => $q->where('name', $like, "%{$keyword}%"));
@@ -139,7 +139,7 @@ class LogActivityController extends Controller
     /** Case-insensitive LIKE, which PostgreSQL spells differently. */
     private function likeOperator(): string
     {
-        return Activity::query()->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
+        return (new Activity)->getConnection()->getDriverName() === 'pgsql' ? 'ilike' : 'like';
     }
 
     /** @return list<string> */

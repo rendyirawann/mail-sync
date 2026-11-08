@@ -181,8 +181,8 @@ class SecurityHeaders
      */
     private function formHosts(): array
     {
-        return array_values(array_filter([
-            Str::of((string) config('app.url'))->rtrim('/')->toString() ?: null,
-        ]));
+        $appUrl = Str::of((string) config('app.url'))->rtrim('/')->toString();
+
+        return $appUrl !== '' ? [$appUrl] : [];
     }
 }

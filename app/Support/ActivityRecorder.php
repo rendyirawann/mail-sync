@@ -147,8 +147,8 @@ class ActivityRecorder
      * Replace secrets with a mask, keeping the key so the diff still shows
      * that the field was touched.
      *
-     * @param  array<string,mixed>  $data
-     * @return array<string,mixed>
+     * @param  array<array-key,mixed>  $data
+     * @return array<array-key,mixed>
      */
     public static function sanitize(array $data): array
     {

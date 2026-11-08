@@ -78,7 +78,7 @@
                                     <input type="text" class="form-control form-control-solid @error('site_name') is-invalid @enderror" id="site_name"
                                         name="site_name" value="{{ $value('site_name', config('app.name')) }}" required
                                         maxlength="60" />
-<x-field-error name="site_name" />
+                                    <x-field-error name="site_name" />
                                     <div class="form-text">Dipakai di judul halaman, navbar, footer, dan meta tag.</div>
                                 </div>
 
@@ -86,7 +86,7 @@
                                     <label class="form-label fw-semibold" for="site_short_name">Nama Pendek</label>
                                     <input type="text" class="form-control form-control-solid @error('site_short_name') is-invalid @enderror" id="site_short_name"
                                         name="site_short_name" value="{{ $value('site_short_name') }}" maxlength="20" />
-<x-field-error name="site_short_name" />
+                                    <x-field-error name="site_short_name" />
                                     <div class="form-text">Untuk ikon home screen (PWA). Maksimal 20 karakter.</div>
                                 </div>
 
@@ -94,7 +94,7 @@
                                     <label class="form-label fw-semibold" for="site_tagline">Tagline</label>
                                     <input type="text" class="form-control form-control-solid @error('site_tagline') is-invalid @enderror" id="site_tagline"
                                         name="site_tagline" value="{{ $value('site_tagline') }}" maxlength="80" />
-<x-field-error name="site_tagline" />
+                                    <x-field-error name="site_tagline" />
                                     <div class="form-text">Tampil kecil di bawah nama aplikasi pada navbar.</div>
                                 </div>
                             </div>
@@ -127,7 +127,7 @@
                                     <label class="form-label fw-semibold" for="site_logo">Unggah Logo</label>
                                     <input type="file" class="form-control form-control-solid @error('site_logo') is-invalid @enderror" id="site_logo"
                                         name="site_logo" accept=".png,.jpg,.jpeg,.webp" />
-<x-field-error name="site_logo" />
+                                    <x-field-error name="site_logo" />
                                     <div class="form-text">PNG, JPG, SVG atau WebP. Maks 2 MB.</div>
                                 </div>
 
@@ -135,7 +135,7 @@
                                     <label class="form-label fw-semibold" for="site_favicon">Unggah Favicon</label>
                                     <input type="file" class="form-control form-control-solid @error('site_favicon') is-invalid @enderror" id="site_favicon"
                                         name="site_favicon" accept=".png,.ico" />
-<x-field-error name="site_favicon" />
+                                    <x-field-error name="site_favicon" />
                                     <div class="form-text">ICO, PNG atau SVG persegi. Maks 512 KB.</div>
                                 </div>
 
@@ -143,7 +143,7 @@
                                     <label class="form-label fw-semibold" for="site_og_image">Unggah OG Image</label>
                                     <input type="file" class="form-control form-control-solid @error('site_og_image') is-invalid @enderror" id="site_og_image"
                                         name="site_og_image" accept=".png,.jpg,.jpeg,.webp" />
-<x-field-error name="site_og_image" />
+                                    <x-field-error name="site_og_image" />
                                     <div class="form-text">Gambar pratinjau saat link dibagikan. Ideal 1200 × 630 px.</div>
                                 </div>
                             </div>
@@ -177,7 +177,7 @@
                                     <label class="form-label fw-semibold" for="site_keywords">Meta Keywords</label>
                                     <input type="text" class="form-control form-control-solid @error('site_keywords') is-invalid @enderror" id="site_keywords"
                                         name="site_keywords" value="{{ $value('site_keywords') }}" maxlength="255" />
-<x-field-error name="site_keywords" />
+                                    <x-field-error name="site_keywords" />
                                     <div class="form-text">Pisahkan dengan koma.</div>
                                 </div>
 
@@ -186,7 +186,7 @@
                                         <label class="form-label fw-semibold" for="site_author">Author</label>
                                         <input type="text" class="form-control form-control-solid @error('site_author') is-invalid @enderror" id="site_author"
                                             name="site_author" value="{{ $value('site_author') }}" maxlength="80" />
-<x-field-error name="site_author" />
+                                        <x-field-error name="site_author" />
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <label class="form-label fw-semibold" for="seo_robots">Robots</label>
@@ -205,14 +205,14 @@
                                         <input type="text" class="form-control form-control-solid @error('seo_twitter_handle') is-invalid @enderror" id="seo_twitter_handle"
                                             name="seo_twitter_handle" value="{{ $value('seo_twitter_handle') }}"
                                             placeholder="@namaakun" maxlength="40" />
-<x-field-error name="seo_twitter_handle" />
+                                        <x-field-error name="seo_twitter_handle" />
                                     </div>
                                     <div class="col-12 col-md-6">
                                         <label class="form-label fw-semibold" for="seo_google_verification">Google Site Verification</label>
                                         <input type="text" class="form-control form-control-solid @error('seo_google_verification') is-invalid @enderror"
                                             id="seo_google_verification" name="seo_google_verification"
                                             value="{{ $value('seo_google_verification') }}" maxlength="120" />
-<x-field-error name="seo_google_verification" />
+                                        <x-field-error name="seo_google_verification" />
                                     </div>
                                 </div>
                             </div>
@@ -277,7 +277,7 @@
                                         <input type="text" class="form-control form-control-solid @error('site_theme_color') is-invalid @enderror" id="site_theme_color"
                                             name="site_theme_color" value="{{ $value('site_theme_color', '#4f46e5') }}"
                                             pattern="^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$" />
-<x-field-error name="site_theme_color" />
+                                        <x-field-error name="site_theme_color" />
                                     </div>
                                     <div class="form-text">Warna bar browser di perangkat mobile.</div>
                                 </div>
@@ -331,7 +331,7 @@
                                     <label class="form-label fw-semibold" for="footer_owner">Pemilik Hak Cipta</label>
                                     <input type="text" class="form-control form-control-solid @error('footer_owner') is-invalid @enderror" id="footer_owner"
                                         name="footer_owner" value="{{ $value('footer_owner') }}" maxlength="80" />
-<x-field-error name="footer_owner" />
+                                    <x-field-error name="footer_owner" />
                                     <div class="form-text">Tahun copyright terisi otomatis mengikuti tahun berjalan.</div>
                                 </div>
 
@@ -340,7 +340,7 @@
                                     <input type="url" class="form-control form-control-solid @error('footer_github') is-invalid @enderror" id="footer_github"
                                         name="footer_github" value="{{ $value('footer_github') }}"
                                         placeholder="https://github.com/username" />
-<x-field-error name="footer_github" />
+                                    <x-field-error name="footer_github" />
                                 </div>
 
                                 <div>
@@ -348,7 +348,7 @@
                                     <input type="url" class="form-control form-control-solid @error('footer_linkedin') is-invalid @enderror" id="footer_linkedin"
                                         name="footer_linkedin" value="{{ $value('footer_linkedin') }}"
                                         placeholder="https://linkedin.com/in/username" />
-<x-field-error name="footer_linkedin" />
+                                    <x-field-error name="footer_linkedin" />
                                 </div>
                             </div>
                         </div>

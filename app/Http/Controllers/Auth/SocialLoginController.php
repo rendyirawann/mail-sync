@@ -7,6 +7,7 @@ use App\Models\Setting;
 use App\Models\User;
 use App\Support\ActivityRecorder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -70,7 +71,17 @@ class SocialLoginController extends Controller
                 'last_login' => now(),
             ]);
         } else {
-            // Create new user
+            // Pendaftaran via login sosial mengikuti saklar "Izinkan registrasi".
+            if (Setting::get('allow_registration', '0') !== '1') {
+                Log::channel('security')->notice('Login sosial ditolak: akun belum terdaftar', [
+                    'provider' => $providerKey,
+                    'ip' => request()->ip(),
+                ]);
+
+                return redirect()->route('login')
+                    ->with('error', 'Akun belum terdaftar. Hubungi administrator untuk mendapatkan akses.');
+            }
+
             $user = User::create([
                 'name' => $socialUser->getName() ?? $socialUser->getNickname() ?? 'User',
                 'username' => $this->generateUniqueUsername($socialUser),
@@ -84,13 +95,11 @@ class SocialLoginController extends Controller
                 'last_login' => now(),
             ]);
 
-            // Assign default role
-            if (method_exists($user, 'assignRole')) {
-                // Assign first available role or 'user' role
-                $defaultRole = \Spatie\Permission\Models\Role::first();
-                if ($defaultRole) {
-                    $user->assignRole($defaultRole);
-                }
+            // Peran default dari config — JANGAN Role::first() (itu Superadmin).
+            $defaultRole = (string) config('permission.default_role', '');
+            if ($defaultRole !== '' && strcasecmp($defaultRole, 'superadmin') !== 0
+                && \Spatie\Permission\Models\Role::where('name', $defaultRole)->exists()) {
+                $user->assignRole($defaultRole);
             }
         }
 
@@ -144,9 +153,10 @@ class SocialLoginController extends Controller
      */
     private function generateUniqueUsername($socialUser): string
     {
+        // Str::slug() bisa menghasilkan string kosong, jadi pakai ?: bukan ??.
         $base = $socialUser->getNickname()
-            ?? Str::slug(explode('@', $socialUser->getEmail())[0])
-            ?? 'user';
+            ?: Str::slug(explode('@', (string) $socialUser->getEmail())[0])
+            ?: 'user';
 
         $username = Str::slug($base);
         $counter = 1;

@@ -2,6 +2,12 @@
 
 return [
 
+    /*
+     * Peran yang diberikan otomatis ke user baru dari login sosial / registrasi.
+     * Kosong = tanpa peran. Superadmin selalu ditolak demi keamanan.
+     */
+    'default_role' => env('PERMISSION_DEFAULT_ROLE', ''),
+
     'models' => [
 
         /*

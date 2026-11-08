@@ -58,8 +58,6 @@ class RoleController extends Controller implements HasMiddleware
 
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function index(Request $request): View
     {
@@ -141,8 +139,6 @@ class RoleController extends Controller implements HasMiddleware
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
@@ -192,7 +188,6 @@ class RoleController extends Controller implements HasMiddleware
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function show(Request $request, $id)
     {
@@ -228,7 +223,6 @@ class RoleController extends Controller implements HasMiddleware
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function edit($id)
     {
@@ -253,7 +247,6 @@ class RoleController extends Controller implements HasMiddleware
      * Update the specified resource in storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
@@ -286,7 +279,7 @@ class RoleController extends Controller implements HasMiddleware
             // --- FIX: PAKSA UPDATE TIMESTAMP ---
             // Set updated_at ke waktu sekarang agar selalu berubah
             // (meskipun nama role tidak diganti)
-            $role->updated_at = Carbon::now();
+            $role->updated_at = now();
 
             // Update permission dan simpan perubahan
             $role->permissions()->sync($request->input('permission'));
@@ -329,7 +322,6 @@ class RoleController extends Controller implements HasMiddleware
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
      */
     public function destroy(Request $request, $id)
     {
