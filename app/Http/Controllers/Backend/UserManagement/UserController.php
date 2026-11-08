@@ -261,7 +261,7 @@ class UserController extends Controller implements HasMiddleware
             'username' => 'required|string|max:100|unique:users,username|alpha_dash',
             'no_wa'    => 'required|string|max:20|min:10|unique:users,no_wa',
             'email'    => 'required|string|email|max:255|unique:users,email',
-            'password' => 'required|string|min:8|confirmed',
+            'password' => ['required', 'string', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
             'avatar'   => 'nullable|mimes:jpg,png,svg|max:2048',
             'roles'    => 'required',
         ], [
@@ -613,7 +613,7 @@ class UserController extends Controller implements HasMiddleware
         $validator = \Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $id,
-            'password' => 'confirmed',
+            'password' => ['nullable', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
             'avatar' => 'nullable|mimes:jpg,png,svg|max:2048',
             'roles' => 'required',
             // 'skpd_id' => 'required',

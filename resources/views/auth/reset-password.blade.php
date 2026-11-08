@@ -26,8 +26,9 @@
             <div class="auth-field">
                 <label class="auth-label" for="reset-email">Alamat email</label>
                 <div class="auth-input-wrap">
-                    <input type="email" name="email" id="reset-email" class="auth-input"
-                        value="{{ old('email', $request->email) }}" autocomplete="email" required readonly />
+                    <input type="email" name="email" id="reset-email" class="auth-input @error('email') is-invalid @enderror"
+                        value="{{ old('email', $request->
+<x-field-error name="email" />email) }}" autocomplete="email" required readonly />
                 </div>
             </div>
 
@@ -35,8 +36,9 @@
                 <label class="auth-label" for="reset-password">Kata sandi baru</label>
                 <div class="auth-input-wrap">
                     <input type="password" name="password" id="reset-password"
-                        class="auth-input auth-input--password" placeholder="••••••••"
+                        class="auth-input auth-input--password @error('password') is-invalid @enderror" placeholder="••••••••"
                         autocomplete="new-password" required />
+<x-field-error name="password" />
                     <button type="button" class="auth-toggle" data-auth-toggle-password="reset-password"
                         aria-label="Tampilkan password" aria-pressed="false">
                         <i class="ki-outline ki-eye fs-4" data-eye aria-hidden="true"></i>
@@ -52,8 +54,9 @@
                 <label class="auth-label" for="reset-password-confirm">Ulangi kata sandi</label>
                 <div class="auth-input-wrap">
                     <input type="password" name="password_confirmation" id="reset-password-confirm"
-                        class="auth-input auth-input--password" placeholder="••••••••"
+                        class="auth-input auth-input--password @error('password_confirmation') is-invalid @enderror" placeholder="••••••••"
                         autocomplete="new-password" required />
+<x-field-error name="password_confirmation" />
                     <button type="button" class="auth-toggle" data-auth-toggle-password="reset-password-confirm"
                         aria-label="Tampilkan password" aria-pressed="false">
                         <i class="ki-outline ki-eye fs-4" data-eye aria-hidden="true"></i>

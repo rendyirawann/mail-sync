@@ -1,7 +1,5 @@
 @extends('errors.layout')
 
-@section('title', 'Belum Terautentikasi')
-
 @section('code', '401')
-@section('heading', 'Belum Terautentikasi')
-@section('message', 'Anda perlu masuk terlebih dahulu untuk mengakses halaman ini.')
+@section('title', 'Perlu Masuk')
+@section('message', 'Anda harus masuk terlebih dahulu untuk mengakses halaman ini.')

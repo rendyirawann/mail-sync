@@ -36,9 +36,18 @@ class PasswordResetLinkController extends Controller
             $request->only('email')
         );
 
-        return $status == Password::RESET_LINK_SENT
-                    ? back()->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+        \Illuminate\Support\Facades\Log::channel('security')->info('Permintaan reset password', [
+            'result' => $status,
+            'ip' => $request->ip(),
+        ]);
+
+        // Hanya throttle yang ditampilkan sebagai error. Email tidak terdaftar
+        // mendapat pesan yang sama dengan sukses agar tidak bisa dipakai menebak akun.
+        if ($status === Password::RESET_THROTTLED) {
+            return back()->withInput($request->only('email'))
+                ->withErrors(['email' => __($status)]);
+        }
+
+        return back()->with('status', __('passwords.sent'));
     }
 }

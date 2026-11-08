@@ -51,6 +51,76 @@ return Application::configure(basePath: dirname(__DIR__))
         // setelah `php artisan config:cache`.
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Never leak stack traces or SQL through an XHR response.
-        $exceptions->dontReport([]);
+        // Request JSON (XHR / api/*) selalu mendapat format {status, message, errors?}
+        // dengan pesan Bahasa Indonesia; request web memakai view errors/{kode}.
+        $exceptions->shouldRenderJsonWhen(
+            fn (\Illuminate\Http\Request $request) => $request->is('api/*') || $request->expectsJson()
+        );
+
+        $exceptions->render(function (\Throwable $e, \Illuminate\Http\Request $request) {
+            if (! ($request->is('api/*') || $request->expectsJson())) {
+                return null; // biarkan Laravel merender view errors.*
+            }
+
+            if ($e instanceof \Illuminate\Validation\ValidationException) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => $e->validator->errors()->first() ?: 'Data yang dikirim tidak valid.',
+                    'errors' => $e->errors(),
+                ], $e->status);
+            }
+
+            $status = match (true) {
+                $e instanceof \Illuminate\Auth\AuthenticationException => 401,
+                $e instanceof \Illuminate\Auth\Access\AuthorizationException => 403,
+                $e instanceof \Illuminate\Database\Eloquent\ModelNotFoundException => 404,
+                $e instanceof \Illuminate\Session\TokenMismatchException => 419,
+                $e instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface => $e->getStatusCode(),
+                default => 500,
+            };
+
+            $defaults = [
+                400 => 'Permintaan tidak valid.',
+                401 => 'Silakan masuk terlebih dahulu.',
+                403 => 'Anda tidak memiliki akses ke halaman ini.',
+                404 => 'Data atau halaman tidak ditemukan.',
+                405 => 'Metode permintaan tidak diizinkan.',
+                408 => 'Waktu permintaan habis.',
+                413 => 'Ukuran file terlalu besar.',
+                419 => 'Sesi Anda telah kedaluwarsa. Silakan muat ulang halaman dan coba lagi.',
+                429 => 'Terlalu banyak permintaan.',
+                503 => 'Layanan sedang dalam pemeliharaan.',
+            ];
+
+            $message = $defaults[$status] ?? 'Terjadi kesalahan pada server.';
+            $headers = $e instanceof \Symfony\Component\HttpKernel\Exception\HttpExceptionInterface ? $e->getHeaders() : [];
+
+            // Pesan kustom dari abort(4xx, '...') ditampilkan; pesan bawaan framework & 5xx tidak.
+            $custom = trim($e->getMessage());
+            if ($status >= 400 && $status < 500 && $custom !== '' && $status !== 429
+                && ! preg_match('/^(This action is unauthorized|The route|No query results|Unauthenticated|The \S+ method is not supported|CSRF token mismatch|Too Many Attempts|Not Found|Invalid signature)/i', $custom)) {
+                $message = $custom;
+            }
+
+            if ($status === 429) {
+                $message = 'Terlalu banyak permintaan. Coba lagi dalam ' . (int) ($headers['Retry-After'] ?? 60) . ' detik.';
+            }
+
+            $payload = ['status' => 'error', 'message' => $message];
+
+            if ($status >= 500 && config('app.debug')) {
+                $payload['debug'] = ['exception' => $e::class, 'detail' => $e->getMessage()];
+            }
+
+            return response()->json($payload, $status, $headers);
+        });
+
+        // Catat penolakan akses ke channel security (A09).
+        $exceptions->report(function (\Illuminate\Auth\Access\AuthorizationException $e) {
+            \Illuminate\Support\Facades\Log::channel('security')->warning('Akses ditolak (403)', [
+                'user_id' => auth()->id(),
+                'path' => request()->path(),
+                'ip' => request()->ip(),
+            ]);
+        });
     })->create();

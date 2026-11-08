@@ -66,11 +66,10 @@ class AppServiceProvider extends ServiceProvider
     private function configurePasswordPolicy(): void
     {
         Password::defaults(function () {
-            $rule = Password::min(8)->letters()->numbers();
+            $rule = Password::min(8)->letters()->mixedCase()->numbers();
 
-            return $this->app->isProduction()
-                ? $rule->mixedCase()->uncompromised()
-                : $rule;
+            // uncompromised() memanggil API HaveIBeenPwned — hanya di production.
+            return $this->app->isProduction() ? $rule->uncompromised() : $rule;
         });
     }
 

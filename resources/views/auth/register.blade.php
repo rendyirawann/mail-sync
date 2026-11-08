@@ -25,16 +25,18 @@
             <div class="auth-field">
                 <label class="auth-label" for="reg-name">Nama lengkap</label>
                 <div class="auth-input-wrap">
-                    <input type="text" name="name" id="reg-name" class="auth-input" value="{{ old('name') }}"
+                    <input type="text" name="name" id="reg-name" class="auth-input @error('name') is-invalid @enderror" value="{{ old('name') }}"
                         autocomplete="name" required autofocus />
+<x-field-error name="name" />
                 </div>
             </div>
 
             <div class="auth-field">
                 <label class="auth-label" for="reg-email">Alamat email</label>
                 <div class="auth-input-wrap">
-                    <input type="email" name="email" id="reg-email" class="auth-input" value="{{ old('email') }}"
+                    <input type="email" name="email" id="reg-email" class="auth-input @error('email') is-invalid @enderror" value="{{ old('email') }}"
                         autocomplete="email" required />
+<x-field-error name="email" />
                 </div>
             </div>
 
@@ -42,7 +44,8 @@
                 <label class="auth-label" for="reg-password">Kata sandi</label>
                 <div class="auth-input-wrap">
                     <input type="password" name="password" id="reg-password"
-                        class="auth-input auth-input--password" autocomplete="new-password" required />
+                        class="auth-input auth-input--password @error('password') is-invalid @enderror" autocomplete="new-password" required />
+<x-field-error name="password" />
                     <button type="button" class="auth-toggle" data-auth-toggle-password="reg-password"
                         aria-label="Tampilkan password" aria-pressed="false">
                         <i class="ki-outline ki-eye fs-4" data-eye aria-hidden="true"></i>
@@ -55,7 +58,8 @@
                 <label class="auth-label" for="reg-password-confirm">Ulangi kata sandi</label>
                 <div class="auth-input-wrap">
                     <input type="password" name="password_confirmation" id="reg-password-confirm"
-                        class="auth-input auth-input--password" autocomplete="new-password" required />
+                        class="auth-input auth-input--password @error('password_confirmation') is-invalid @enderror" autocomplete="new-password" required />
+<x-field-error name="password_confirmation" />
                 </div>
             </div>
 
