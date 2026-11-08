@@ -9,6 +9,8 @@
                 <span class="d-none d-sm-inline">&middot; Dibuat oleh
                     <a href="{{ $brand['github'] }}" target="_blank" rel="noopener noreferrer"
                         class="text-gray-800 text-hover-primary fw-semibold">{{ $brand['owner'] }}</a></span>
+                &middot; Part of <a href="https://mdt-solution.site" target="_blank" rel="noopener"
+                    class="text-gray-800 text-hover-primary fw-semibold">MDT Solution</a>
             </div>
 
             <nav class="app-footer__social" aria-label="Tautan pengembang">

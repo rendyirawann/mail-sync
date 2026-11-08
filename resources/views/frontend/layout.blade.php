@@ -56,7 +56,9 @@
 
     <footer class="w-full border-t border-slate-200 bg-white py-8">
         <div class="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-4 text-xs text-slate-500 sm:flex-row sm:px-10">
-            <p>&copy; {{ now()->year }} {{ config('app.name') }}. All rights reserved.</p>
+            <p>&copy; {{ now()->year }} {{ config('app.name') }}. All rights reserved.
+                &middot; Part of <a href="https://mdt-solution.site" target="_blank" rel="noopener"
+                    class="font-semibold text-slate-700 hover:underline">MDT Solution</a></p>
             <p class="font-medium">{{ config('seo.tagline') }}</p>
         </div>
     </footer>
