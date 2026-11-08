@@ -4,10 +4,18 @@ namespace App\Providers;
 
 use App\Support\Brand;
 use App\View\Composers\NotificationComposer;
+use Illuminate\Auth\Events\Failed;
+use Illuminate\Auth\Events\Lockout;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Auth\Events\Logout;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Middleware\TrustProxies;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
@@ -28,6 +36,8 @@ class AppServiceProvider extends ServiceProvider
         $this->configureUrls();
         $this->configureAuthorization();
         $this->configurePasswordPolicy();
+        $this->configureModels();
+        $this->logSecurityEvents();
         $this->configureRateLimiting();
         $this->shareBranding();
     }
@@ -60,6 +70,42 @@ class AppServiceProvider extends ServiceProvider
         Gate::before(function ($user, $ability) {
             return $user->hasRole(['Superadmin', 'superadmin']) ? true : null;
         });
+    }
+
+    /**
+     * Deteksi N+1 dan mass-assignment yang terbuang di local/staging.
+     * Pelanggaran DICATAT (bukan exception) agar halaman lama tidak tiba-tiba 500.
+     */
+    private function configureModels(): void
+    {
+        $strict = ! $this->app->isProduction();
+
+        Model::preventLazyLoading($strict);
+        Model::preventSilentlyDiscardingAttributes($strict);
+
+        Model::handleLazyLoadingViolationUsing(function (Model $model, string $relation): void {
+            Log::warning('N+1 terdeteksi: lazy loading relasi', ['model' => $model::class, 'relation' => $relation]);
+        });
+
+        Model::handleDiscardedAttributeViolationUsing(function (Model $model, array $keys): void {
+            Log::warning('Atribut dibuang karena tidak ada di $fillable', ['model' => $model::class, 'keys' => $keys]);
+        });
+    }
+
+    /**
+     * Catat event autentikasi ke channel "security" (OWASP A09).
+     * Hanya ID, email ter-mask, dan IP — tanpa password/token.
+     */
+    private function logSecurityEvents(): void
+    {
+        $context = static fn (): array => ['ip' => request()->ip(), 'user_agent' => substr((string) request()->userAgent(), 0, 160)];
+        $mask = static fn (?string $email): string => $email ? preg_replace('/(?<=.).(?=[^@]*@)/u', '*', $email) : '-';
+
+        Event::listen(Login::class, fn (Login $e) => Log::channel('security')->info('Login berhasil', ['user_id' => $e->user->getAuthIdentifier()] + $context()));
+        Event::listen(Failed::class, fn (Failed $e) => Log::channel('security')->warning('Login gagal', ['email' => $mask($e->credentials['email'] ?? null)] + $context()));
+        Event::listen(Logout::class, fn (Logout $e) => Log::channel('security')->info('Logout', ['user_id' => $e->user?->getAuthIdentifier()] + $context()));
+        Event::listen(Lockout::class, fn (Lockout $e) => Log::channel('security')->warning('Login dikunci (throttle)', $context()));
+        Event::listen(PasswordReset::class, fn (PasswordReset $e) => Log::channel('security')->info('Password direset', ['user_id' => $e->user->getAuthIdentifier()] + $context()));
     }
 
     /** One password policy for registration, reset and change-password. */

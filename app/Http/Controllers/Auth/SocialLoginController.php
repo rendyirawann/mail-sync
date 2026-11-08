@@ -123,7 +123,14 @@ class SocialLoginController extends Controller
     private function setProviderConfig(string $driver, string $providerKey): void
     {
         $clientId = Setting::get("social_{$providerKey}_client_id", '');
-        $clientSecret = Setting::get("social_{$providerKey}_client_secret", '');
+        $clientSecret = (string) Setting::get("social_{$providerKey}_client_secret", '');
+
+        // Secret disimpan terenkripsi; nilai lama (plaintext) tetap didukung.
+        try {
+            $clientSecret = $clientSecret !== '' ? \Illuminate\Support\Facades\Crypt::decryptString($clientSecret) : '';
+        } catch (\Illuminate\Contracts\Encryption\DecryptException) {
+            // plaintext lama — biarkan apa adanya
+        }
         $redirectUrl = url("/admin/auth/{$driver}/callback");
 
         config([

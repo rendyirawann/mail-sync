@@ -9,6 +9,7 @@ use App\Support\ActivityRecorder;
 use App\Support\Brand;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
@@ -206,7 +207,8 @@ class SettingController extends Controller
 
             // An empty secret means "keep the stored one".
             if ($request->filled("social_{$provider}_client_secret")) {
-                Setting::set("social_{$provider}_client_secret", (string) $request->input("social_{$provider}_client_secret"));
+                // Dienkripsi (APP_KEY) agar secret OAuth tidak tersimpan plaintext di database.
+                Setting::set("social_{$provider}_client_secret", Crypt::encryptString((string) $request->input("social_{$provider}_client_secret")));
             }
         }
     }
