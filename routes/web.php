@@ -15,6 +15,8 @@ use App\Http\Controllers\Backend\UserManagement\RoleController;
 // User management
 use App\Http\Controllers\Backend\UserManagement\UserController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\LetterVerificationController;
+use App\Http\Controllers\Frontend\RegistrationController;
 // Help / system
 use App\Http\Controllers\Frontend\SeoController;
 use Illuminate\Support\Facades\Route;
@@ -34,7 +36,17 @@ Route::withoutMiddleware('throttle:web')->group(function () {
     Route::get('/sitemap.xml', [SeoController::class, 'sitemap'])->name('sitemap');
 });
 
-Route::middleware(['auth', 'forbid-banned-user'])->group(function () {
+// --- Pendaftaran tim (publik) ---
+Route::get('/daftar', [RegistrationController::class, 'create'])->name('register.team');
+Route::post('/daftar', [RegistrationController::class, 'store'])->middleware(['throttle:password', 'spam'])->name('register.team.store');
+Route::get('/daftar/{registration:code}', [RegistrationController::class, 'show'])->name('register.team.show');
+
+// --- Verifikasi keaslian surat (hasil pindai QR) ---
+Route::get('/verifikasi/{token}', LetterVerificationController::class)
+    ->where('token', '[A-Za-z0-9]{20,40}')
+    ->name('letters.verify');
+
+Route::middleware(['auth', 'forbid-banned-user', 'platform'])->group(function () {
 
     // --- Dashboard (every authenticated role) ---
     Route::get('/admin/dashboard', [DashboardAdminController::class, 'index'])->name('dashboard');
