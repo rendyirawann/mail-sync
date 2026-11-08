@@ -1,18 +1,14 @@
 <?php
-    
-    namespace App\Http\Controllers\Backend\MyProfile;
 
+namespace App\Http\Controllers\Backend\MyProfile;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Spatie\Activitylog\Models\Activity;
-use Carbon\Carbon;
 use Auth;
-    
+use Illuminate\Http\Request;
+use Spatie\Activitylog\Models\Activity;
+
 class ActivityController extends Controller
 {
-    
-    
     /**
      * Display a listing of the resource.
      *
@@ -23,89 +19,82 @@ class ActivityController extends Controller
         return view('backend.my_profile.activity.index');
     }
 
-
-
     public function getActivity(Request $request)
-{
-    $userId = Auth::id();
-    
-    $data = Activity::with('causer')
-        ->where('causer_id', $userId)
-        ->whereNotIn('log_name', ['login', 'logout'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+    {
+        $userId = Auth::id();
 
-    return datatables()->of($data)
+        $data = Activity::with('causer')
+            ->where('causer_id', $userId)
+            ->whereNotIn('log_name', ['login', 'logout'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-        // =============================
-        // CREATED_AT
-        // =============================
-        ->addColumn('created_at', function ($data) {
-            if (empty($data->created_at)) {
-                return '<div class="text-end"><label class="badge badge-warning">Belum Pernah Login</label></div>';
-            }
-            return '<div class="text-end"><label class="badge badge-info">'
-                . $data->created_at->diffForHumans() .
-                '</label></div>';
-        })
+        return datatables()->of($data)
 
-        // =============================
-        // DESCRIPTION
-        // =============================
-        ->addColumn('description', function ($data) {
-            return $data->description ?? '-';
-        })
+            // =============================
+            // CREATED_AT
+            // =============================
+            ->addColumn('created_at', function ($data) {
+                if (empty($data->created_at)) {
+                    return '<div class="text-end"><label class="badge badge-warning">Belum Pernah Login</label></div>';
+                }
 
-        // =============================
-        // IP + AGENT (AMAN)
-        // =============================
-        ->addColumn('ip', function ($data) {
-            $ip     = $data->properties['ip'] ?? '-';
-            $browser = $data->properties['agent']['browser'] ?? '-';
+                return '<div class="text-end"><label class="badge badge-info">'
+                    .$data->created_at->diffForHumans().
+                    '</label></div>';
+            })
 
-            //return $ip . ' | ' . $browser;
-            return $ip;
-        })
+            // =============================
+            // DESCRIPTION
+            // =============================
+            ->addColumn('description', function ($data) {
+                return $data->description ?? '-';
+            })
 
-        // =============================
-        // OS + BROWSER (AMAN)
-        // =============================
-        ->addColumn('os', function ($data) {
-            $os      = $data->properties['agent']['os'] ?? '-';
-            $browser = $data->properties['agent']['browser'] ?? '-';
+            // =============================
+            // IP + AGENT (AMAN)
+            // =============================
+            ->addColumn('ip', function ($data) {
+                $ip = $data->properties['ip'] ?? '-';
+                $browser = $data->properties['agent']['browser'] ?? '-';
 
-            return $os . ' - ' . $browser;
-        })
+                // return $ip . ' | ' . $browser;
+                return $ip;
+            })
 
-        // =============================
-        // DEVICE (AMAN)
-        // =============================
-        ->addColumn('device', function ($data) {
-        $agent = $data->properties['agent'] ?? [];
+            // =============================
+            // OS + BROWSER (AMAN)
+            // =============================
+            ->addColumn('os', function ($data) {
+                $os = $data->properties['agent']['os'] ?? '-';
+                $browser = $data->properties['agent']['browser'] ?? '-';
 
-        $isDesktop = $agent['is_desktop'] ?? false;
-        $isMobile  = $agent['is_mobile'] ?? false;
-        $deviceRaw = $agent['device'] ?? 'Unknown';
+                return $os.' - '.$browser;
+            })
 
-        if ($isDesktop) {
-            return '<i class="ki-outline ki-screen text-primary me-2"></i>Desktop';
-        }
+            // =============================
+            // DEVICE (AMAN)
+            // =============================
+            ->addColumn('device', function ($data) {
+                $agent = $data->properties['agent'] ?? [];
 
-        if ($isMobile) {
-            return '<i class="ki-outline ki-phone text-warning me-2"></i>Mobile';
-        }
+                $isDesktop = $agent['is_desktop'] ?? false;
+                $isMobile = $agent['is_mobile'] ?? false;
+                $deviceRaw = $agent['device'] ?? 'Unknown';
 
-        // Jika bukan desktop dan bukan mobile → unknown
-        return '<i class="ki-outline ki-question-2 text-danger me-2"></i>' . $deviceRaw;
-    })
+                if ($isDesktop) {
+                    return '<i class="ki-outline ki-screen text-primary me-2"></i>Desktop';
+                }
 
+                if ($isMobile) {
+                    return '<i class="ki-outline ki-phone text-warning me-2"></i>Mobile';
+                }
 
-        ->rawColumns(['created_at', 'description', 'ip', 'os', 'device'])
-        ->make(true);
-}
+                // Jika bukan desktop dan bukan mobile → unknown
+                return '<i class="ki-outline ki-question-2 text-danger me-2"></i>'.$deviceRaw;
+            })
 
-
-   
-    
-    
+            ->rawColumns(['created_at', 'description', 'ip', 'os', 'device'])
+            ->make(true);
+    }
 }

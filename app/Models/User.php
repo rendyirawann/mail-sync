@@ -2,21 +2,21 @@
 
 namespace App\Models;
 
+use Cog\Contracts\Ban\Bannable as BannableContract;
+use Cog\Laravel\Ban\Traits\Bannable;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Spatie\Permission\Traits\HasRoles;
-use Cog\Contracts\Ban\Bannable as BannableContract;
-use Cog\Laravel\Ban\Traits\Bannable;
-use Illuminate\Database\Eloquent\Concerns\HasUuids; // 1. Ini penawar errornya
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Storage; // 1. Ini penawar errornya
 use Illuminate\Support\Str;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements BannableContract
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     // 2. Masukkan HasUuids ke dalam use
-    use HasFactory, Notifiable, HasRoles, Bannable, HasUuids;
+    use Bannable, HasFactory, HasRoles, HasUuids, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -85,12 +85,12 @@ class User extends Authenticatable implements BannableContract
             return $file;
         }
 
-        if (Storage::disk('public')->exists('user/avatar/' . $file)) {
-            return Storage::disk('public')->url('user/avatar/' . $file);
+        if (Storage::disk('public')->exists('user/avatar/'.$file)) {
+            return Storage::disk('public')->url('user/avatar/'.$file);
         }
 
-        if (is_file(public_path('assets/media/avatars/' . $file))) {
-            return asset('assets/media/avatars/' . $file);
+        if (is_file(public_path('assets/media/avatars/'.$file))) {
+            return asset('assets/media/avatars/'.$file);
         }
 
         return null;

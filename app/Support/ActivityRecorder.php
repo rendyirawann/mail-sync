@@ -31,9 +31,13 @@ class ActivityRecorder
      * breakdown and the diff view never have to guess it from wording.
      */
     public const CREATE = 'create';
+
     public const UPDATE = 'update';
+
     public const DELETE = 'delete';
+
     public const LOGIN = 'login';
+
     public const LOGOUT = 'logout';
 
     /** Keys that must never reach the activity log. */
@@ -125,8 +129,8 @@ class ActivityRecorder
         return [
             'ip' => $request->ip(),
             'agent' => [
-                'browser' => trim($agent->browser() . ' ' . $agent->version($agent->browser())),
-                'os' => trim($agent->platform() . ' ' . $agent->version($agent->platform())),
+                'browser' => trim($agent->browser().' '.$agent->version($agent->browser())),
+                'os' => trim($agent->platform().' '.$agent->version($agent->platform())),
                 'device' => $agent->device(),
                 'is_mobile' => $agent->isMobile(),
                 'is_desktop' => $agent->isDesktop(),

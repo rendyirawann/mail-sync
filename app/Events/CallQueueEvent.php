@@ -13,7 +13,9 @@ class CallQueueEvent implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $text_to_speak;
+
     public $display_data;
+
     public $type; // 'queue' atau 'food'
 
     public function __construct($text_to_speak, $display_data, $type = 'queue')

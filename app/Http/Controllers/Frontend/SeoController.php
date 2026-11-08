@@ -41,14 +41,14 @@ class SeoController extends Controller
         } else {
             $lines[] = 'Allow: /';
             foreach (self::DISALLOW as $path) {
-                $lines[] = 'Disallow: ' . $path;
+                $lines[] = 'Disallow: '.$path;
             }
         }
 
         $lines[] = '';
-        $lines[] = 'Sitemap: ' . url('sitemap.xml');
+        $lines[] = 'Sitemap: '.url('sitemap.xml');
 
-        return response(implode("\n", $lines) . "\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
+        return response(implode("\n", $lines)."\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']);
     }
 
     /**
@@ -57,7 +57,7 @@ class SeoController extends Controller
      */
     public function sitemap(): Response
     {
-        $xml = Cache::remember('seo.sitemap.' . md5((string) config('app.url')), 3600, function (): string {
+        $xml = Cache::remember('seo.sitemap.'.md5((string) config('app.url')), 3600, function (): string {
             $lastmod = now()->toAtomString();
             $urls = '';
 
@@ -70,10 +70,10 @@ class SeoController extends Controller
                 $urls .= "  <url>\n    <loc>{$loc}</loc>\n    <lastmod>{$lastmod}</lastmod>\n    <changefreq>weekly</changefreq>\n    <priority>1.0</priority>\n  </url>\n";
             }
 
-            return '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
-                . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n"
-                . $urls
-                . '</urlset>' . "\n";
+            return '<?xml version="1.0" encoding="UTF-8"?>'."\n"
+                .'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'."\n"
+                .$urls
+                .'</urlset>'."\n";
         });
 
         return response($xml, 200, ['Content-Type' => 'application/xml; charset=UTF-8']);

@@ -118,7 +118,7 @@ class ActivityDiff
             return $event;
         }
 
-        $name = Str::lower((string) $activity->log_name . ' ' . (string) $activity->description);
+        $name = Str::lower((string) $activity->log_name.' '.(string) $activity->description);
 
         return match (true) {
             str_contains($name, 'logout') => 'logout',

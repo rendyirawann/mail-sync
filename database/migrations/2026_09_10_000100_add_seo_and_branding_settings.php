@@ -16,8 +16,8 @@ return new class extends Migration
         return [
             'site_short_name' => \Illuminate\Support\Str::limit($appName, 12, ''),
             'site_tagline' => 'Modern Admin Dashboard',
-            'site_description' => $appName . ' — panel administrasi modern untuk mengelola pengguna, hak akses, dan operasional aplikasi Anda.',
-            'site_keywords' => strtolower($appName) . ', admin panel, dashboard, manajemen pengguna, laravel',
+            'site_description' => $appName.' — panel administrasi modern untuk mengelola pengguna, hak akses, dan operasional aplikasi Anda.',
+            'site_keywords' => strtolower($appName).', admin panel, dashboard, manajemen pengguna, laravel',
             'site_author' => 'Rendy Irawan',
             'site_favicon' => 'assets/media/branding/favicon.ico',
             'site_og_image' => 'assets/media/branding/og-image.png',

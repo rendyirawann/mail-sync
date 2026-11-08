@@ -1,28 +1,23 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-
-// Frontend
-use App\Http\Controllers\Frontend\HomeController;
-use App\Http\Controllers\Frontend\SeoController;
-
-// Dashboard
 use App\Http\Controllers\Backend\Dashboard\DashboardAdminController;
-
-// My profile
+// Frontend
+use App\Http\Controllers\Backend\Help\LogActivityController;
 use App\Http\Controllers\Backend\MyProfile\AccountController;
+// Dashboard
 use App\Http\Controllers\Backend\MyProfile\ActivityController;
+// My profile
 use App\Http\Controllers\Backend\MyProfile\LoginSessionController;
 use App\Http\Controllers\Backend\MyProfile\ProfileController;
 use App\Http\Controllers\Backend\MyProfile\SecurityController;
-
-// User management
-use App\Http\Controllers\Backend\UserManagement\RoleController;
-use App\Http\Controllers\Backend\UserManagement\UserController;
-
-// Help / system
-use App\Http\Controllers\Backend\Help\LogActivityController;
 use App\Http\Controllers\Backend\Settings\SettingController;
+use App\Http\Controllers\Backend\UserManagement\RoleController;
+// User management
+use App\Http\Controllers\Backend\UserManagement\UserController;
+use App\Http\Controllers\Frontend\HomeController;
+// Help / system
+use App\Http\Controllers\Frontend\SeoController;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,4 +112,4 @@ Route::middleware(['auth', 'forbid-banned-user'])->group(function () {
     });
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

@@ -124,16 +124,16 @@ class SecurityHeaders
         $directives = [
             "default-src 'self'",
             // 'unsafe-eval' diperlukan Alpine.js (build CDN) dan beberapa plugin tema.
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' " . $join(self::CDN_HOSTS, $this->frameHosts(), $extra, $dev),
-            "style-src 'self' 'unsafe-inline' https: " . $join(self::FONT_HOSTS, $dev),
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' ".$join(self::CDN_HOSTS, $this->frameHosts(), $extra, $dev),
+            "style-src 'self' 'unsafe-inline' https: ".$join(self::FONT_HOSTS, $dev),
             "img-src 'self' data: blob: https:",
             "font-src 'self' data: https:",
-            "connect-src 'self' " . $join($this->websocketHosts(), self::CDN_HOSTS, $extra, $dev),
+            "connect-src 'self' ".$join($this->websocketHosts(), self::CDN_HOSTS, $extra, $dev),
             "media-src 'self' data: blob: https:",
             "worker-src 'self' blob:",
-            "frame-src 'self' " . $join($this->frameHosts(), $extra),
+            "frame-src 'self' ".$join($this->frameHosts(), $extra),
             "frame-ancestors 'self'",
-            "form-action 'self' " . $join($this->formHosts()),
+            "form-action 'self' ".$join($this->formHosts()),
             "base-uri 'self'",
             "object-src 'none'",
         ];

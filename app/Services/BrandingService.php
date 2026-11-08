@@ -113,14 +113,14 @@ class BrandingService
         $words = preg_split('/[^\p{L}\p{N}]+/u', $appName, -1, PREG_SPLIT_NO_EMPTY) ?: [];
 
         if (count($words) >= 2) {
-            return Str::upper(mb_substr($words[0], 0, 1) . mb_substr($words[1], 0, 1));
+            return Str::upper(mb_substr($words[0], 0, 1).mb_substr($words[1], 0, 1));
         }
 
         $single = $words[0] ?? 'A';
 
         // "MailSync" -> "MS" by picking up the internal capital letters.
         if (preg_match_all('/\p{Lu}/u', $single, $m) && count($m[0]) >= 2) {
-            return Str::upper($m[0][0] . $m[0][1]);
+            return Str::upper($m[0][0].$m[0][1]);
         }
 
         return Str::upper(mb_substr($single, 0, 2));
@@ -155,43 +155,43 @@ class BrandingService
 
     private function markSvg(string $initials, array $palette): string
     {
-        $id = 'g' . substr(md5($initials . $palette['primary']), 0, 6);
+        $id = 'g'.substr(md5($initials.$palette['primary']), 0, 6);
         $text = htmlspecialchars($initials, ENT_QUOTES | ENT_XML1, 'UTF-8');
         $fontSize = mb_strlen($initials) > 2 ? 140 : (mb_strlen($initials) > 1 ? 176 : 240);
         $fontStack = "'Plus Jakarta Sans','Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif";
 
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="' . $text . '">'
-            . '<defs><linearGradient id="' . $id . '" x1="0" y1="0" x2="1" y2="1">'
-            . '<stop offset="0" stop-color="' . $palette['primary'] . '"/>'
-            . '<stop offset="1" stop-color="' . $palette['secondary'] . '"/>'
-            . '</linearGradient></defs>'
-            . '<rect width="512" height="512" rx="116" fill="url(#' . $id . ')"/>'
-            . '<path d="M96 132h320L256 268Z" fill="#ffffff" fill-opacity=".16"/><path d="M96 380h320" stroke="#ffffff" stroke-opacity=".28" stroke-width="18" stroke-linecap="round"/>'
-            . '<text x="256" y="262" text-anchor="middle" dominant-baseline="central" font-family="' . $fontStack . '"'
-            . ' font-size="' . $fontSize . '" font-weight="800" letter-spacing="-6" fill="#ffffff">' . $text . '</text>'
-            . '</svg>';
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="'.$text.'">'
+            .'<defs><linearGradient id="'.$id.'" x1="0" y1="0" x2="1" y2="1">'
+            .'<stop offset="0" stop-color="'.$palette['primary'].'"/>'
+            .'<stop offset="1" stop-color="'.$palette['secondary'].'"/>'
+            .'</linearGradient></defs>'
+            .'<rect width="512" height="512" rx="116" fill="url(#'.$id.')"/>'
+            .'<path d="M96 132h320L256 268Z" fill="#ffffff" fill-opacity=".16"/><path d="M96 380h320" stroke="#ffffff" stroke-opacity=".28" stroke-width="18" stroke-linecap="round"/>'
+            .'<text x="256" y="262" text-anchor="middle" dominant-baseline="central" font-family="'.$fontStack.'"'
+            .' font-size="'.$fontSize.'" font-weight="800" letter-spacing="-6" fill="#ffffff">'.$text.'</text>'
+            .'</svg>';
     }
 
     private function fullSvg(string $appName, string $initials, array $palette, string $textColor): string
     {
-        $id = 'f' . substr(md5($appName), 0, 6);
+        $id = 'f'.substr(md5($appName), 0, 6);
         $name = htmlspecialchars($appName, ENT_QUOTES | ENT_XML1, 'UTF-8');
         $text = htmlspecialchars($initials, ENT_QUOTES | ENT_XML1, 'UTF-8');
         $width = 132 + max(1, mb_strlen($appName)) * 28;
         $fontStack = "'Plus Jakarta Sans','Segoe UI',system-ui,-apple-system,Arial,sans-serif";
 
-        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' . $width . ' 128" width="' . $width . '" height="128" role="img" aria-label="' . $name . '">'
-            . '<defs><linearGradient id="' . $id . '" x1="0" y1="0" x2="1" y2="1">'
-            . '<stop offset="0" stop-color="' . $palette['primary'] . '"/>'
-            . '<stop offset="1" stop-color="' . $palette['secondary'] . '"/>'
-            . '</linearGradient></defs>'
-            . '<rect x="8" y="12" width="104" height="104" rx="24" fill="url(#' . $id . ')"/>'
-            . '<path d="M26 36h68L60 66Z" fill="#ffffff" fill-opacity=".18"/>'
-            . '<text x="60" y="68" text-anchor="middle" dominant-baseline="central" font-family="' . $fontStack . '"'
-            . ' font-size="38" font-weight="800" letter-spacing="-1.5" fill="#ffffff">' . $text . '</text>'
-            . '<text x="130" y="68" dominant-baseline="central" font-family="' . $fontStack . '"'
-            . ' font-size="42" font-weight="800" letter-spacing="-1" fill="' . $textColor . '">' . $name . '</text>'
-            . '</svg>';
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '.$width.' 128" width="'.$width.'" height="128" role="img" aria-label="'.$name.'">'
+            .'<defs><linearGradient id="'.$id.'" x1="0" y1="0" x2="1" y2="1">'
+            .'<stop offset="0" stop-color="'.$palette['primary'].'"/>'
+            .'<stop offset="1" stop-color="'.$palette['secondary'].'"/>'
+            .'</linearGradient></defs>'
+            .'<rect x="8" y="12" width="104" height="104" rx="24" fill="url(#'.$id.')"/>'
+            .'<path d="M26 36h68L60 66Z" fill="#ffffff" fill-opacity=".18"/>'
+            .'<text x="60" y="68" text-anchor="middle" dominant-baseline="central" font-family="'.$fontStack.'"'
+            .' font-size="38" font-weight="800" letter-spacing="-1.5" fill="#ffffff">'.$text.'</text>'
+            .'<text x="130" y="68" dominant-baseline="central" font-family="'.$fontStack.'"'
+            .' font-size="42" font-weight="800" letter-spacing="-1" fill="'.$textColor.'">'.$name.'</text>'
+            .'</svg>';
     }
 
     private function manifest(string $appName, array $palette, string $description): string
@@ -414,7 +414,7 @@ class BrandingService
             $body .= $png;
         }
 
-        return $header . $entries . $body;
+        return $header.$entries.$body;
     }
 
     /** 1200x630 Open Graph card: gradient ground, mark, and the app name. */
@@ -474,7 +474,7 @@ class BrandingService
         $lines = [];
 
         foreach (preg_split('/\s+/u', trim($text)) ?: [] as $word) {
-            $candidate = trim($line . ' ' . $word);
+            $candidate = trim($line.' '.$word);
             $box = @imagettfbbox(22, 0, $font, $candidate);
 
             if ($box !== false && ($box[2] - $box[0]) > $maxWidth && $line !== '') {

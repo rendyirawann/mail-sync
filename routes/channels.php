@@ -16,8 +16,8 @@ Broadcast::channel('online-users', function ($user) {
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
-            'avatar_url' => $user->avatar ? asset('storage/user/avatar/' . $user->avatar) : null,
-            'initials' => substr($user->name, 0, 1)
+            'avatar_url' => $user->avatar ? asset('storage/user/avatar/'.$user->avatar) : null,
+            'initials' => substr($user->name, 0, 1),
         ];
     }
 });

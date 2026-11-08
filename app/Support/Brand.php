@@ -105,7 +105,7 @@ class Brand
                 return $value;
             }
 
-            foreach ([ltrim($value, '/'), 'assets/media/logos/' . $value] as $path) {
+            foreach ([ltrim($value, '/'), 'assets/media/logos/'.$value] as $path) {
                 if (is_file(public_path($path))) {
                     return self::versioned($path);
                 }
@@ -134,7 +134,7 @@ class Brand
     {
         $mtime = @filemtime(public_path($path));
 
-        return asset($path) . ($mtime ? '?v=' . $mtime : '');
+        return asset($path).($mtime ? '?v='.$mtime : '');
     }
 
     private static function clean(?string $value): ?string

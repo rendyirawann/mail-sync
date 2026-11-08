@@ -1,18 +1,14 @@
 <?php
-    
-    namespace App\Http\Controllers\Backend\MyProfile;
 
+namespace App\Http\Controllers\Backend\MyProfile;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Spatie\Activitylog\Models\Activity;
-use Carbon\Carbon;
 use Auth;
-    
+use Illuminate\Http\Request;
+use Spatie\Activitylog\Models\Activity;
+
 class LoginSessionController extends Controller
 {
-    
-    
     /**
      * Display a listing of the resource.
      *
@@ -24,85 +20,81 @@ class LoginSessionController extends Controller
     }
 
     public function getLoginSession(Request $request)
-{
-    $userId = Auth::id();
+    {
+        $userId = Auth::id();
 
-    $data = Activity::with('causer')
-        ->where('causer_id', $userId)
-        ->whereIn('log_name', ['login', 'logout'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+        $data = Activity::with('causer')
+            ->where('causer_id', $userId)
+            ->whereIn('log_name', ['login', 'logout'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
-    return datatables()->of($data)
+        return datatables()->of($data)
 
-        // =============================
-        // CREATED_AT
-        // =============================
-        ->addColumn('created_at', function ($data) {
-            if (empty($data->created_at)) {
-                return '<div class="text-end"><label class="badge badge-warning">Belum Pernah Login</label></div>';
-            }
-            return '<div class="text-end"><label class="badge badge-info">'
-                . $data->created_at->diffForHumans() .
-                '</label></div>';
-        })
+            // =============================
+            // CREATED_AT
+            // =============================
+            ->addColumn('created_at', function ($data) {
+                if (empty($data->created_at)) {
+                    return '<div class="text-end"><label class="badge badge-warning">Belum Pernah Login</label></div>';
+                }
 
-        // =============================
-        // DESCRIPTION
-        // =============================
-        ->addColumn('description', function ($data) {
-            return $data->description ?? '-';
-        })
+                return '<div class="text-end"><label class="badge badge-info">'
+                    .$data->created_at->diffForHumans().
+                    '</label></div>';
+            })
 
-        // =============================
-        // IP + AGENT (AMAN)
-        // =============================
-        ->addColumn('ip', function ($data) {
-            $ip     = $data->properties['ip'] ?? '-';
-            $browser = $data->properties['agent']['browser'] ?? '-';
+            // =============================
+            // DESCRIPTION
+            // =============================
+            ->addColumn('description', function ($data) {
+                return $data->description ?? '-';
+            })
 
-            //return $ip . ' | ' . $browser;
-            return $ip;
-        })
+            // =============================
+            // IP + AGENT (AMAN)
+            // =============================
+            ->addColumn('ip', function ($data) {
+                $ip = $data->properties['ip'] ?? '-';
+                $browser = $data->properties['agent']['browser'] ?? '-';
 
-        // =============================
-        // OS + BROWSER (AMAN)
-        // =============================
-        ->addColumn('os', function ($data) {
-            $os      = $data->properties['agent']['os'] ?? '-';
-            $browser = $data->properties['agent']['browser'] ?? '-';
+                // return $ip . ' | ' . $browser;
+                return $ip;
+            })
 
-            return $os . ' - ' . $browser;
-        })
+            // =============================
+            // OS + BROWSER (AMAN)
+            // =============================
+            ->addColumn('os', function ($data) {
+                $os = $data->properties['agent']['os'] ?? '-';
+                $browser = $data->properties['agent']['browser'] ?? '-';
 
-        // =============================
-        // DEVICE (AMAN)
-        // =============================
-        ->addColumn('device', function ($data) {
-        $agent = $data->properties['agent'] ?? [];
+                return $os.' - '.$browser;
+            })
 
-        $isDesktop = $agent['is_desktop'] ?? false;
-        $isMobile  = $agent['is_mobile'] ?? false;
-        $deviceRaw = $agent['device'] ?? 'Unknown';
+            // =============================
+            // DEVICE (AMAN)
+            // =============================
+            ->addColumn('device', function ($data) {
+                $agent = $data->properties['agent'] ?? [];
 
-        if ($isDesktop) {
-            return '<i class="ki-outline ki-screen text-primary me-2"></i>Desktop';
-        }
+                $isDesktop = $agent['is_desktop'] ?? false;
+                $isMobile = $agent['is_mobile'] ?? false;
+                $deviceRaw = $agent['device'] ?? 'Unknown';
 
-        if ($isMobile) {
-            return '<i class="ki-outline ki-phone text-warning me-2"></i>Mobile';
-        }
+                if ($isDesktop) {
+                    return '<i class="ki-outline ki-screen text-primary me-2"></i>Desktop';
+                }
 
-        // Jika bukan desktop dan bukan mobile → unknown
-        return '<i class="ki-outline ki-question-2 text-danger me-2"></i>' . $deviceRaw;
-    })
+                if ($isMobile) {
+                    return '<i class="ki-outline ki-phone text-warning me-2"></i>Mobile';
+                }
 
+                // Jika bukan desktop dan bukan mobile → unknown
+                return '<i class="ki-outline ki-question-2 text-danger me-2"></i>'.$deviceRaw;
+            })
 
-        ->rawColumns(['created_at', 'description', 'ip', 'os', 'device'])
-        ->make(true);
-}
-
-
-  
-    
+            ->rawColumns(['created_at', 'description', 'ip', 'os', 'device'])
+            ->make(true);
+    }
 }

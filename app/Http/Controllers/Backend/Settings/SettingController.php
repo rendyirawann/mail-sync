@@ -128,7 +128,7 @@ class SettingController extends Controller
 
         ActivityRecorder::log(
             'pengaturan aplikasi',
-            'Membuat ulang logo & favicon dari nama aplikasi "' . $name . '"',
+            'Membuat ulang logo & favicon dari nama aplikasi "'.$name.'"',
             ['new' => $assets],
         );
 
@@ -155,11 +155,11 @@ class SettingController extends Controller
         }
 
         // Nama acak + ekstensi hasil deteksi MIME (bukan dari nama file klien).
-        $filename = $prefix . '-' . Str::random(32) . '.' . ($file->guessExtension() ?: 'png');
+        $filename = $prefix.'-'.Str::random(32).'.'.($file->guessExtension() ?: 'png');
         $file->move($directory, $filename);
 
         $previous = Setting::get($key);
-        Setting::set($key, BrandingService::DIR . '/' . $filename);
+        Setting::set($key, BrandingService::DIR.'/'.$filename);
 
         $this->deleteReplaced($previous, $filename);
     }

@@ -2,9 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Setting;
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 
 class CheckMaintenanceMode
@@ -17,7 +17,7 @@ class CheckMaintenanceMode
         try {
             // Check if maintenance mode is enabled in settings
             if (Setting::get('maintenance_mode', '0') === '1') {
-                
+
                 // Allow superadmins to bypass
                 if (Auth::check() && Auth::user()->hasRole(['Superadmin', 'superadmin'])) {
                     return $next($request);

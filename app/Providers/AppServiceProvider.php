@@ -141,12 +141,12 @@ class AppServiceProvider extends ServiceProvider
 
         RateLimiter::for('login', fn (Request $request) => [
             Limit::perMinute($limits['login'])
-                ->by(strtolower((string) $request->input('email')) . '|' . $request->ip()),
+                ->by(strtolower((string) $request->input('email')).'|'.$request->ip()),
             Limit::perMinute($limits['login'] * 4)->by($request->ip()),
         ]);
 
         RateLimiter::for('password', fn (Request $request) => Limit::perMinute($limits['password'])
-            ->by(strtolower((string) $request->input('email')) . '|' . $request->ip()));
+            ->by(strtolower((string) $request->input('email')).'|'.$request->ip()));
     }
 
     /** Expose settings + resolved brand identity to every view. */

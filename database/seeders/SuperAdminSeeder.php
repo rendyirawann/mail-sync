@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\Models\Permission;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class SuperAdminSeeder extends Seeder
 {
@@ -28,17 +27,17 @@ class SuperAdminSeeder extends Seeder
         $user = User::firstOrCreate(
             ['email' => 'superadmin@gmail.com'],
             [
-                'name'              => 'Super Administrator',
-                'username'          => 'superadmin', // Pastikan username diisi
-                'password'          => Hash::make('12qwaszx123!!@@##'),
-                'no_wa'             => '08123456789',
+                'name' => 'Super Administrator',
+                'username' => 'superadmin', // Pastikan username diisi
+                'password' => Hash::make('12qwaszx123!!@@##'),
+                'no_wa' => '08123456789',
                 'email_verified_at' => now(),
-                'is_active'         => true,
+                'is_active' => true,
             ]
         );
 
         // 4. Assign Role Superadmin ke User tersebut
-        if (!$user->hasRole('Superadmin')) {
+        if (! $user->hasRole('Superadmin')) {
             $user->assignRole($role);
         }
 

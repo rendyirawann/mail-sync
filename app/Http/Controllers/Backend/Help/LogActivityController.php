@@ -62,8 +62,8 @@ class LogActivityController extends Controller
             ->editColumn('log_name', function (Activity $activity) {
                 [$label, $color] = ActivityDiff::badge(ActivityDiff::type($activity));
 
-                return '<span class="badge badge-light-' . $color . ' fw-semibold">' . e($label) . '</span>'
-                    . '<span class="d-block fs-8 text-muted mt-1">' . e(Str::limit((string) $activity->log_name, 26)) . '</span>';
+                return '<span class="badge badge-light-'.$color.' fw-semibold">'.e($label).'</span>'
+                    .'<span class="d-block fs-8 text-muted mt-1">'.e(Str::limit((string) $activity->log_name, 26)).'</span>';
             })
             ->addColumn('causer_id', fn (Activity $a) => e($a->causer->name ?? 'Sistem'))
             ->editColumn('description', fn (Activity $a) => e((string) $a->description))
@@ -82,7 +82,7 @@ class LogActivityController extends Controller
                     return '<i class="ki-outline ki-phone text-warning me-2"></i>Mobile';
                 }
 
-                return '<i class="ki-outline ki-question-2 text-gray-500 me-2"></i>' . e($agent['device'] ?? 'Unknown');
+                return '<i class="ki-outline ki-question-2 text-gray-500 me-2"></i>'.e($agent['device'] ?? 'Unknown');
             })
             ->addColumn('action', fn (Activity $activity) => view('backend.help.log_activity._action', [
                 'activity' => $activity,

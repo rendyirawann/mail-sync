@@ -4,7 +4,6 @@ namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow; // Pakai Now biar instan
 use Illuminate\Foundation\Events\Dispatchable;
@@ -15,6 +14,7 @@ class ForceLogoutNotification implements ShouldBroadcastNow
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
+
     public $userId;
 
     /**
@@ -23,7 +23,7 @@ class ForceLogoutNotification implements ShouldBroadcastNow
     public function __construct($userId)
     {
         $this->userId = $userId;
-        $this->message = "Akun Anda telah login di perangkat lain. Sesi ini akan diakhiri.";
+        $this->message = 'Akun Anda telah login di perangkat lain. Sesi ini akan diakhiri.';
     }
 
     /**
@@ -33,7 +33,7 @@ class ForceLogoutNotification implements ShouldBroadcastNow
     {
         // Kirim ke Private Channel user yang bersangkutan
         return [
-            new PrivateChannel('App.Models.User.' . $this->userId),
+            new PrivateChannel('App.Models.User.'.$this->userId),
         ];
     }
 }
