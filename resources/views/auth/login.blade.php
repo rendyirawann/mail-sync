@@ -125,6 +125,7 @@
             <div class="auth-social">
                 @foreach ($enabledProviders as $provider)
                     <a href="{{ route('social.redirect', $provider['driver']) }}" rel="nofollow">
+                        {{-- Aman: SVG statis yang didefinisikan di @php atas, bukan input user. --}}
                         {!! $provider['icon'] !!}
                         <span>{{ $provider['label'] }}</span>
                     </a>
