@@ -19,7 +19,7 @@ class SlugGenerator
     public const RESERVED = [
         'admin', 'api', 'app', 'auth', 'build', 'daftar', 'login', 'logout', 'up', 'storage',
         'assets', 'css', 'js', 'img', 'verifikasi', 'sitemap', 'robots', 'broadcasting',
-        'harga', 'bantuan', 'syarat', 'privasi', 'kontak', 'www', 'mail', 'help',
+        'harga', 'bantuan', 'syarat', 'privasi', 'kontak', 'www', 'mail', 'help', 'demo',
     ];
 
     public function __construct(private readonly int $length = 4) {}

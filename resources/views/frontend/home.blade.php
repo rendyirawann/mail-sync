@@ -36,6 +36,7 @@
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
                         </a>
                         <a href="#harga" class="rounded-xl border border-slate-300 bg-white px-6 py-3.5 text-sm font-semibold text-zinc-950 transition-colors hover:bg-slate-50">Lihat Harga</a>
+                        <a href="{{ route('demo.show') }}" class="rounded-xl border border-brand-600 bg-white px-6 py-3.5 text-sm font-semibold text-brand-700 transition-colors hover:bg-slate-50">Masuk sebagai Demo</a>
                     </div>
 
                     <div class="grid grid-cols-3 gap-4 border-t border-slate-200 pt-4">

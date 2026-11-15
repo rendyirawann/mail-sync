@@ -54,6 +54,8 @@ class Team extends Model
             'frozen_at' => 'datetime',
             'modules' => 'array',
             'profile' => 'array',
+            'is_demo' => 'boolean',
+            'demo_expires_at' => 'datetime',
         ];
     }
 

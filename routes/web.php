@@ -17,6 +17,7 @@ use App\Http\Controllers\Backend\Saas\TeamAdminController;
 use App\Http\Controllers\Backend\Settings\SettingController;
 use App\Http\Controllers\Backend\UserManagement\RoleController;
 use App\Http\Controllers\Backend\UserManagement\UserController;
+use App\Http\Controllers\Frontend\DemoController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\LetterVerificationController;
 use App\Http\Controllers\Frontend\RegistrationController;
@@ -41,6 +42,10 @@ Route::withoutMiddleware('throttle:web')->group(function () {
 });
 
 // --- Pendaftaran tim (publik) ---
+// Akun demo sekali pakai (dibatasi per IP di DemoAccountService)
+Route::get('/demo', [DemoController::class, 'show'])->name('demo.show');
+Route::post('/demo', [DemoController::class, 'store'])->middleware(['throttle:password', 'spam'])->name('demo.store');
+
 Route::get('/daftar', [RegistrationController::class, 'create'])->name('register.team');
 Route::post('/daftar', [RegistrationController::class, 'store'])->middleware(['throttle:password', 'spam'])->name('register.team.store');
 Route::get('/daftar/{registration:code}', [RegistrationController::class, 'show'])->name('register.team.show');
