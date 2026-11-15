@@ -130,9 +130,19 @@
 (function () {
     var form = document.getElementById('demoForm');
     if (form) {
-        form.addEventListener('submit', function () {
+        // Anti-spam menolak kiriman < 3 detik setelah halaman dimuat; klik cepat ditahan lalu dikirim otomatis.
+        var loadedAt = Date.now(), MIN = {{ \App\Http\Middleware\ProtectAgainstSpam::MIN_SECONDS }} * 1000 + 600, sent = false;
+        form.addEventListener('submit', function (e) {
             var b = document.getElementById('demoSubmit');
+            if (sent) { e.preventDefault(); return; }
+            var wait = MIN - (Date.now() - loadedAt);
             b.disabled = true; b.textContent = 'Membuat akun...';
+            if (wait > 0) {
+                e.preventDefault();
+                setTimeout(function () { sent = true; form.submit(); }, wait);
+            } else {
+                sent = true;
+            }
         });
     }
 
